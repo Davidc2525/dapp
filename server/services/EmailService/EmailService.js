@@ -97,7 +97,7 @@ class EmailService {
      * @param {BasicDataUser} user 
      */
     async sendActiveAccount(user) {
-        console.log("DEBUG sendActiveAccount",user)
+        console.log("DEBUG sendActiveAccount", user)
         // send mail with defined transport object
         let info = await this.transporter.sendMail({
             from: '"BetBlizt Admin" <foo@example.com>', // sender address
@@ -110,7 +110,7 @@ class EmailService {
             `
         });
 
-        console.log("DEBUG sendActiveAccount completed ",info)
+        console.log("DEBUG sendActiveAccount completed ", info)
     }
     /**
      * 
@@ -140,48 +140,3 @@ async function start_service() {
 
 start_service();
 
-async function main() {
-    console.log(credentials)
-    const oAuth2Client = new google.auth.OAuth2(credentials.client_id, credentials.client_secret, credentials.redirect_uris[0]);
-
-    oAuth2Client.setCredentials({ refresh_token: r_token })
-    // Generate test SMTP service account from ethereal.email
-    // Only needed if you don't have a real mail account for testing
-    //let testAccount = await nodemailer.createTestAccount();
-
-    //const accessToken = await oAuth2Client.getAccessToken();
-    // create reusable transporter object using the default SMTP transport
-    let transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-            type: "OAUTH2",
-            user: "david25pcxtreme@gmail.com",
-            clientId: credentials.client_id,
-            clientSecret: credentials.client_secret,
-            refreshToken: r_token,
-            //accessToken
-
-        }
-    });
-
-
-    // send mail with defined transport object
-    let info = await transporter.sendMail({
-        from: '"Fred Foo 👻" <foo@example.com>', // sender address
-        to: "david25pcxtreme@gmail.com", // list of receivers
-        subject: "Hello ✔", // Subject line
-        text: "Hello world?", // plain text body
-        html: "<b>Hello world?</b>", // html body
-    });
-
-
-
-    console.log("Message sent: %s", info.messageId);
-    // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
-
-    // Preview only available when sending through an Ethereal account
-    console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
-    // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
-}
-
-//main().catch(console.error);

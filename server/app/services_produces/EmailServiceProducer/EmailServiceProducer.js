@@ -31,4 +31,17 @@ export default class EmailServiceProducer{
         }
     }
 
+    async sendForgotPassworrd(user) {
+        user.pass = null;
+        try {
+            await this.queue.add({
+                event:"forgot_pass",
+                user
+            })
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+
 }
