@@ -69,7 +69,10 @@ class CacheableUserProviderDecorator {
 
         return this.provider.getUserByEmail(email)
     }
-
+     /**
+    * @type User
+    */ 
+      async getUserByUsername(username) {return this.provider.getUserByUsername(username)}
     /**
      * 
      * @param {User} user 

@@ -11,7 +11,7 @@ import RealTimeManager from "./RealTimeManager.js";
 import BNBPriceManager from "./BNBPriceManager.js";
 import AppManager from "./AppManager.js";
 import CacheAndPubSubManager from "./CacheAndPubSubManager.js";
-
+import EmailServiceProducerManager from "./EmailServiceProducerManager.js";
 export default {
     AppManager,
     RealTimeManager,
@@ -24,6 +24,7 @@ export default {
     SlotGameManager,
     AuthManager,
     CacheAndPubSubManager,
+    EmailServiceProducerManager,
 
     //nueva version de obtener los providers
     getAppProvider() { return AppManager.getInstance() },
@@ -36,5 +37,6 @@ export default {
     getCountBetProvider() { return CountBetManager.getInstance() },
     getSlotGameProvider() { return SlotGameManager.getInstance() },
     getAuthProvider() { return AuthManager.getInstance() },
-    getCacheAndPubServiceProvider() { return CacheAndPubSubManager.getInstance() }
+    getCacheAndPubServiceProvider() { return CacheAndPubSubManager.getInstance() },
+    getEmailServiceProducerService() { return EmailServiceProducerManager.getInstance() }
 }

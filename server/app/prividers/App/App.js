@@ -76,24 +76,48 @@ class App {
                 }
             }
             ,
-            async create({ email, pass }) {
+            async create({ email, pass, username }) {
                 //comprobar si existe
                 //TODO validaciones
+
                 try {
-                    const u_db = await um.getUserByEmail(email);
-                    if (u_db != null)
-                        throw { err: "user_exists", msg: "usuario ya registrado con ese email: " + email };
-
-                    var u = new User();
-                    u.email = email;
-                    u.pass = pass;
-
-
-                    um.createUser(u);
-                    return BodySucces({ user: u });
+                    await um.getUserByEmail(email);
+                    return BodyError({ err: "user_exists", msg: "usuario ya existe con ese correo" })
                 } catch (error) {
-                    return BodyError(error ,[error])
+                    console.log(error)
+                    if (error.err == "UserNoFound") {
+                        try {
+                            console.log("username",await Manager.getUserProvider().getUserByUsername(username));
+                            return BodyError({ err: "user_exists", msg: "usuario ya existe con ese username" })
+                        } catch (error) {
+                            console.log("username",error)
+                            if (error.err == "UserNoFound") {
+                                var u = new User();
+                                u.email = email;
+                                u.pass = pass;
+                                u.username = username;
+
+
+                                um.createUser(u);
+
+                                try {
+                                    await Manager
+                                        .getEmailServiceProducerService()
+                                        .sendActiveAccount(u);
+                                } catch (error) {
+                                    console.log("ERROR no se envio el correo de activacion de cuenta")
+                                    console.log(error)
+                                }
+
+                                return BodySucces({ user: u });
+                            }
+                            return BodyError({ err: "server_error", msg: JSON.stringify(error) })
+
+                        }
+                    }
+
                 }
+
 
             }
             ,
@@ -175,7 +199,7 @@ class App {
 
                     return BodySucces({ bet })
                 } catch (error) {
-                   
+
                     return BodyError(error)
                 }
             },
@@ -252,7 +276,7 @@ class App {
                     const token = getTokenInHeader(context.req);
 
                     const user = await authm.verify(token);
-                    return BodySucces({ user,wallet: user.wallet_address })
+                    return BodySucces({ user, wallet: user.wallet_address })
                 } catch (error) {
                     //console.log("csm",error)
                     return BodyError(error)
@@ -317,26 +341,26 @@ function BodySucces(load) {
     return { PORT, success: true, error: {}, ...load };
 }
 
-function BodyError(error,errors) {
-    return { PORT, success: false, error,errors };
+function BodyError(error, errors) {
+    return { PORT, success: false, error, errors };
 }
 
 function getTokenInHeader(req, res) {
     // console.log(req);
-   try{
-    //if(!req.hasOwnProperty("headers")) throw { err: "headers", msg: "no se encontro cabezeras" } 
-    if (req.headers.hasOwnProperty("authorization")) {
-        const authHeader = req.headers.authorization;
-        //console.log(authHeader)
-        return authHeader.split(" ")[1];
-    } else {
-        throw { err: "token_miss", msg: "no se encontro cabezera authorization" }
+    try {
+        //if(!req.hasOwnProperty("headers")) throw { err: "headers", msg: "no se encontro cabezeras" } 
+        if (req.headers.hasOwnProperty("authorization")) {
+            const authHeader = req.headers.authorization;
+            //console.log(authHeader)
+            return authHeader.split(" ")[1];
+        } else {
+            throw { err: "token_miss", msg: "no se encontro cabezera authorization" }
 
+        }
+    } catch (error) {
+        console.log(error)
+        throw error
     }
-   }catch(error){
-       console.log(error)
-       throw error
-   }
 
 }
 

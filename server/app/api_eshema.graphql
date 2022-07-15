@@ -93,7 +93,7 @@ type ResponseWallet {
 type Query {
     #user api
     byId(id:String):ResponseUser
-    create(email:String!,pass:String!):ResponseUser
+    create(email:String!,pass:String!,username:String!):ResponseUser
     login(email:String!,pass:String!):ResponseLogin
     setwallet(addr:String):ResponseWallet
     wallet:ResponseWallet

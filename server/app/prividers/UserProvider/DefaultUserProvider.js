@@ -4,6 +4,9 @@ import IUserProvider from "./IUserProvider.js"
 import mongoose from "mongoose";
 import User from "./User.js";
 
+import Bull from "bull"
+import Manager from "../../managers/Manager.js";
+
 
 class Exception {
     constructor(msg) {
@@ -40,6 +43,7 @@ class DefaultUserProvider extends IUserProvider {
         });
 
         this.UserModel = mongoose.model('users', this.UserS);
+        this.cola = new Bull("email");
     }
 
     /**
@@ -59,6 +63,14 @@ class DefaultUserProvider extends IUserProvider {
         if (_u == null) throw new UserNoFoundException("no existe usuario: " + email);
         return new User(_u);
     }
+    /**
+    * @type User
+    */ 
+     async getUserByUsername(username) {
+        let _u = await this.UserModel.findOne({ username });
+        if (_u == null) throw new UserNoFoundException("no existe usuario: " + username);
+        return new User(_u);
+    }
 
     /**
      * 
@@ -75,7 +87,9 @@ class DefaultUserProvider extends IUserProvider {
         new_user.wallet_address = "";
         new_user.wallet_address_is_set = false;
         new_user.save();
-        return user;
+
+        
+        return new User(user);
     }
     /**
      * 
