@@ -1,0 +1,122 @@
+type Error{
+    err:String
+    msg:String
+}
+type Errors{
+    errors:[Error]
+}
+type User{
+    _id:String
+    id:String
+    username:String
+    email:String
+    wallet_address:String
+    wallet_address_is_set:Boolean
+}
+type strucBalance{
+    id_user:String
+    balance:String
+}
+type Bet{
+    _id: String,
+    uid: String,
+    numbers: [Int],
+    createat: String,
+    win: Boolean,
+    win_all: Boolean
+    mega_win:Boolean
+    amount_win:String
+    amount: String #id,id_user,randoms[],win,amount
+}
+type ResponseUser{
+    success:Boolean
+    error:Error
+    errors:[Error]
+    user:User
+}
+type ResponseBet {  
+    PORT:String
+    success:Boolean
+    error:Error
+    bet : Bet
+    #balance:String
+}
+
+type ResponseBalance{
+    success:Boolean
+    error:Error
+    balance:String
+}
+
+type ResponseLogin{
+    success:Boolean!
+    error:Error!
+    token:String
+    user:User
+}
+type Inovice{
+    _id:String
+    currencypaid:String
+    currencyreceived:String
+    create:Int
+    app:String
+    billing_reason:String
+    cunstomer:String
+    description:String
+    amountreceived:String
+    amountpaid:String
+    state:String
+    method:String
+    pricethen:String
+    
+}
+type ResponseInovice{
+    success:Boolean
+    error:Error
+    inovice:Inovice
+}
+
+type ResponseInovices{
+    success:Boolean
+    error:Error
+    inovice:[Inovice]
+}
+
+type ResponseWallet {
+    success :Boolean
+    error:Error
+    #err:String
+    wallet:String
+} 
+
+#API--------------------------------------------------------------------------------
+type Query {
+    #user api
+    byId(id:String):ResponseUser
+    create(email:String!,pass:String!):ResponseUser
+    login(email:String!,pass:String!):ResponseLogin
+    setwallet(addr:String):ResponseWallet
+    wallet:ResponseWallet
+
+    #balance
+    balanceByIdUser(id:String):ResponseBalance
+
+    #con token de sesion
+    balance:ResponseBalance
+
+    #api bets
+    #betsUser(name:String!):ResponseBet    
+    #aqui ya tiene q ir el token de sesion
+    #newBet(uid:String!,amount:Float!):ResponseBet
+
+    newBetToken(amount:Float!):ResponseBet
+
+
+    #api inovice
+    createinovice(amountpaid:String!,amountreceived:String!):ResponseInovice
+    cancelinovice(inoviceid:String!):ResponseInovice
+    inovices:ResponseInovices
+
+
+    promise:Int
+}

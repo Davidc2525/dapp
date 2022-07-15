@@ -1,0 +1,27 @@
+2022-06-04T14:29:44.802637679 0.067326s notice: Recursively removing directory /home/david/dapp/rethinkdb_data/tmp
+2022-06-04T14:29:44.836321116 0.101008s notice: Initializing directory /home/david/dapp/rethinkdb_data
+2022-06-04T14:29:44.836438799 0.101126s info: Creating a default database for your convenience. (This is because you ran 'rethinkdb' without 'create', 'serve', or '--join', and the directory '/home/david/dapp/rethinkdb_data' did not already exist or is empty.)
+2022-06-04T14:29:44.836468121 0.101155s notice: Running rethinkdb 2.4.2 (GCC 9.4.0)...
+2022-06-04T14:29:44.837906235 0.102594s notice: Running on Linux 5.4.0-91-generic x86_64
+2022-06-04T14:29:44.837954773 0.102642s notice: Loading data from directory /home/david/dapp/rethinkdb_data
+2022-06-04T14:29:45.084074517 0.348762s info: Automatically using cache size of 1066 MB
+2022-06-04T14:29:45.115360776 0.380048s notice: Listening for intracluster connections on port 29015
+2022-06-04T14:29:45.122432339 0.387120s notice: Listening for client driver connections on port 28015
+2022-06-04T14:29:45.122519535 0.387207s notice: Listening for administrative HTTP connections on port 8080
+2022-06-04T14:29:45.122529839 0.387217s notice: Listening on cluster addresses: 127.0.0.1, ::1
+2022-06-04T14:29:45.122536982 0.387224s notice: Listening on driver addresses: 127.0.0.1, ::1
+2022-06-04T14:29:45.122543203 0.387230s notice: Listening on http addresses: 127.0.0.1, ::1
+2022-06-04T14:29:45.122549271 0.387236s notice: To fully expose RethinkDB on the network, bind to all addresses by running rethinkdb with the `--bind all` command line option.
+2022-06-04T14:29:45.122555534 0.387242s notice: Server ready, "nft_yni" 7fdbf671-6a9b-44f6-bf4a-3119b782c23c
+2022-06-04T14:31:23.009814747 98.274502s info: Table 75b120d7-4b41-4fe2-a66e-f71ab8315c71: Starting a new Raft election for term 1.
+2022-06-04T14:31:23.010202435 98.274890s info: Table 75b120d7-4b41-4fe2-a66e-f71ab8315c71: Added replica on this server.
+2022-06-04T14:31:23.042079436 98.306767s info: Table 75b120d7-4b41-4fe2-a66e-f71ab8315c71: This server is Raft leader for term 1. Latest log index is 0.
+2022-06-04T14:40:05.960631635 621.225319s info: Table ab85478c-56a5-4032-a698-cf1248fe08cf: Starting a new Raft election for term 1.
+2022-06-04T14:40:05.961017745 621.225705s info: Table ab85478c-56a5-4032-a698-cf1248fe08cf: Added replica on this server.
+2022-06-04T14:40:05.999037358 621.263725s info: Table ab85478c-56a5-4032-a698-cf1248fe08cf: This server is Raft leader for term 1. Latest log index is 0.
+2022-06-04T14:53:37.313098504 1432.577786s info: Table ab85478c-56a5-4032-a698-cf1248fe08cf: Configuration is changing.
+2022-06-04T16:33:24.621204592 7419.885892s notice: Server got SIGINT from pid 0, uid 0; shutting down...
+2022-06-04T16:33:24.621316297 7419.886003s notice: Shutting down client connections...
+2022-06-04T16:33:24.621728227 7419.886415s notice: All client connections closed.
+2022-06-04T16:33:24.621733394 7419.886420s notice: Shutting down storage engine... (This may take a while if you had a lot of unflushed data in the writeback cache.)
+2022-06-04T16:33:24.631435630 7419.896123s notice: Storage engine shut down.
