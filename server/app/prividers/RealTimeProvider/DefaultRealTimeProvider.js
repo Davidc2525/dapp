@@ -215,10 +215,14 @@ export default class DefaultRealTimeProvider extends SlotGameOserver {
                                     let data = JSON.parse(message);
                                     //comprobar que el evento es de connections
                                     //y sumar las conneciones de este servidor al resultado
-                                    if (data.event == "connections") {
+                                    /**
+                                     * if (data.event == "connections") {
                                         //     console.log(data.data)
                                         data.data.count += conn_user.connectionsCount()
                                     }
+                                     */
+
+                                    
                                     conn_user.user.send(
                                         new Payload(data.event, data.data)
                                     )
