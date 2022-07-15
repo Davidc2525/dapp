@@ -197,9 +197,9 @@ export default class DefaultRealTimeProvider extends SlotGameOserver {
             });
 
             this.io.on("connection", (socket) => {
-                console.log("DEBUG  -new connection", socket.handshake.auth)
+               // console.log("DEBUG  -new connection", socket.handshake.auth)
 
-                console.log("socket.data.user", socket.data.user)
+                //console.log("socket.data.user", socket.data.user)
 
                 this._bind_user_connection(socket.data.user, socket)
                     .then(conn_user => {

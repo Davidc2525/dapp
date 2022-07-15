@@ -1,5 +1,5 @@
 {
-  "name": "bet-blizt-server",
+  "name": "bet-blitz-server",
   "version": "1.0.0",
   "description": "",
   "main": "main-server",
@@ -7,13 +7,13 @@
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "main-server": "node server/app/app.js",
-    "main-server-dev": "nodemon server/app/app.js",
-    "email-service": "node server/services/EmailService/EmailService.js",
-    "email-service-dev": "nodemon server/services/EmailService/EmailService.js",
-    "bnbprice-service": "node server/services/GetPriceBnb.js",
-    "bnbprice-service-dev": "nodemon server/services/GetPriceBnb.js"
+    "main-server":          "node server/app/app.js",
+    "main-server-dev":      "nodemon server/app/app.js",
+    "email-service":        "node server/services/EmailService/EmailService.js",
+    "email-service-dev":    "nodemon server/services/EmailService/EmailService.js",
+    "bnbprice-service":     "node server/services/GetPriceBnb.js",
+    "bnbprice-service-dev": "nodemon server/services/GetPriceBnb.js",
+    "db":                   "mongod --dbpath ~/data"
   },
   "type": "module",
   "keywords": [],

@@ -103,17 +103,17 @@ class EmailService {
     async sendActiveAccount(user) {
         
         const token = jwt.sign({ id:user.id }, process.env.SECRET, { expiresIn: process.env.SERVICE_EMAIL_TOKEN_EXPIRE });
-        const host = process.env.SERVICE_BNB_PRICE_HOST;
-        const port = process.env.SERVICE_BNB_PRICE_PORT;
-        const proto = process.env.SERVICE_BNB_PRICE_PROTO;
+        const host = process.env.HOST;
+        const port = process.env.SERVICE_SERVER_PORT;
+        const proto = process.env.PROTO;
 
-        const _host = `${proto}${host}:${proto}`
+        const _host = `${proto}${host}:${port}`
 
         const link = `${_host}/account/active/${token}`;
         console.log("DEBUG sendActiveAccount", user);
         // send mail with defined transport object
         let info = await this.transporter.sendMail({
-            from: '"BetBlizt Admin"', // sender address
+            from: '"BetBlitz Admin"', // sender address
             to: user.email, // list of receivers
             subject: "Verifica tu cuenta ahora ✔", // Subject line
             text: "", // plain text body
@@ -139,7 +139,7 @@ class EmailService {
          */
         // send mail with defined transport object
         let info = await this.transporter.sendMail({
-            from: '"BetBlizt Admin" <foo@example.com>', // sender address
+            from: '"BetBlitz Admin" <foo@example.com>', // sender address
             to: user.email, // list of receivers
             subject: "Cambio de clave ✔", // Subject line
             text: "", // plain text body
