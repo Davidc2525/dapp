@@ -2,6 +2,7 @@
 
 
 import Bull from "bull"
+import Manager from "../../managers/Manager.js";
 import User from "../../prividers/UserProvider/User.js";
 
 
@@ -31,12 +32,14 @@ export default class EmailServiceProducer{
         }
     }
 
-    async sendForgotPassworrd(user) {
+    async sendForgotPassworrd(user,new_temp_pass) {
         user.pass = null;
         try {
+           
             await this.queue.add({
                 event:"forgot_pass",
-                user
+                user,
+                new_temp_pass
             })
         } catch (error) {
             console.log(error)

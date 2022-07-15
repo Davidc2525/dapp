@@ -25,7 +25,7 @@ export class NotifiedUser {
  */
 export default class User extends NotifiedUser{
     
-    constructor({id=null,username=null,email=null,pass=null,wallet_address=null,wallet_address_is_set=null}={}) {
+    constructor({id=null,username=null,active=false,email=null,pass=null,wallet_address=null,wallet_address_is_set=null}={}) {
         super();
         //this._id;
         /**
@@ -48,6 +48,10 @@ export default class User extends NotifiedUser{
          * @type {string}
          */
         this.pass = pass;
+        /**
+         * @type {boolean}
+         */
+        this.active = active;
         /**
          * billetera de usuario
          * @type {string}

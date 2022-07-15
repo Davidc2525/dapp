@@ -1,5 +1,8 @@
-import nodemailer from "nodemailer"
-import { google } from "googleapis"
+import nodemailer from "nodemailer";
+import { google } from "googleapis";
+import jwt from "jsonwebtoken";
+import "dotenv/config"
+//import pass_generator from "generate-password";
 import Bull from "bull";
 const credentials =
 {
@@ -39,7 +42,7 @@ class RedisQueueConsumer {
         }
         if (job.data.event == "forgot_pass") {
             try {
-                await this.email_service.sendForgotPassworrd(new BasicDataUser(job.data.user));
+                await this.email_service.sendForgotPassworrd(new BasicDataUser(job.data.user),job.data.new_temp_pass);
                 done();
             } catch (error) {
                 console.log(error)
@@ -53,6 +56,7 @@ class BasicDataUser {
 
     constructor({ id = null, username = null, email = null, pass = null, wallet_address = null, wallet_address_is_set = null } = {}) {
         //this._id;
+        this.id = id;
         /**
          * username de usuario
          * @type {string}
@@ -91,22 +95,26 @@ class EmailService {
         });
 
     }
-
+ 
     /**
      * 
      * @param {BasicDataUser} user 
      */
     async sendActiveAccount(user) {
-        console.log("DEBUG sendActiveAccount", user)
+        
+        const token = jwt.sign({ id:user.id }, process.env.SECRET, { expiresIn: process.env.SERVICE_EMAIL_TOKEN_EXPIRE });
+        const link = `http://localhost:5000/account/active/${token}`;
+        console.log("DEBUG sendActiveAccount", user);
         // send mail with defined transport object
         let info = await this.transporter.sendMail({
-            from: '"BetBlizt Admin" <foo@example.com>', // sender address
+            from: '"BetBlizt Admin"', // sender address
             to: user.email, // list of receivers
-            subject: "Activa tu cuenta ahora ✔", // Subject line
+            subject: "Verifica tu cuenta ahora ✔", // Subject line
             text: "", // plain text body
             html: `
-                <h1>Hola ${user.username}, debes activar tu cuenta.</h1>
-                <p>sigue el enlace para continuar <a href="http://localhost:4000/">Activar</a></p>
+                <h1>Hola ${user.username}, debes verificar tu cuenta.</h1>
+                <p>sigue el enlace para continuar <a href="${link}">Verificar</a></p>
+                <p>enlace: ${link}</p>
             `
         });
 
@@ -116,7 +124,13 @@ class EmailService {
      * 
      * @param {BasicDataUser} user 
      */
-    async sendForgotPassworrd(user) {
+    async sendForgotPassworrd(user,new_temp_pass) {
+        /**
+         * const new_temp_pass = pass_generator.generate({
+            length: 10,
+            numbers: true
+        });
+         */
         // send mail with defined transport object
         let info = await this.transporter.sendMail({
             from: '"BetBlizt Admin" <foo@example.com>', // sender address
@@ -125,7 +139,9 @@ class EmailService {
             text: "", // plain text body
             html: `
         <h1>Hola ${user.username}, olvidaste tu clave.</h1>
-        <p>copia el codigo para cambiar la clave 123456</p>
+        <p>Se creo una clave temporal para ti, accede con esta nueva clave y configura una nueva clave.</p>
+        <h1>${new_temp_pass}</h1>
+        <h3>No reveles esta clave a ninguna persona.</h3>
     `
         });
 
@@ -136,6 +152,7 @@ class EmailService {
 async function start_service() {
     console.log("DEBUG servicio email activado")
     const consumer = new RedisQueueConsumer("email");
+   
 }
 
 start_service();

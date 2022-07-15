@@ -42,6 +42,32 @@ export default class DefaultAuthProvider {
 
     }
 
+    async accountVerified(token){
+        try {
+
+            var decoded = jwt.verify(token, SECRET);
+            
+           // console.log("user id in token",decoded);
+            const user = await (Manager.getUserProvider().getUserByID(decoded.id));
+           
+            await Manager.getUserProvider()
+            .setActiveAccount(user,true);
+            return true;
+        } catch (err) {
+            console.log(err)
+            if (err.name == "TokenExpiredError") {
+                throw new Exception("token_expired", "token expired, expired: "+err.expiredAt);
+            }
+            if (err.name == "JsonWebTokenError") {
+                throw new Exception("invalid_token", err.message);
+            }
+            if (err.name == "NotBeforeError") {
+                throw new Exception("invalid_token", err.message);
+            }
+            throw new Exception("invalid_token", "token invalido: " + err.message);
+        }
+    }
+
     /**
      * verificar token, si es valido devuelve objeto con informacion de usuario
      * @param {string} token 

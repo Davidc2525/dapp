@@ -38,6 +38,7 @@ class DefaultUserProvider extends IUserProvider {
             username: { type: String, index: true },
             email: { type: String, index: true },
             pass: String,
+            active: { type: Boolean },
             wallet_address: String,
             wallet_address_is_set: Boolean
         });
@@ -65,12 +66,46 @@ class DefaultUserProvider extends IUserProvider {
     }
     /**
     * @type User
-    */ 
-     async getUserByUsername(username) {
+    */
+    async getUserByUsername(username) {
         let _u = await this.UserModel.findOne({ username });
         if (_u == null) throw new UserNoFoundException("no existe usuario: " + username);
         return new User(_u);
     }
+
+    /**
+     * 
+     * @param {User} user 
+     * @param {string} new_pass 
+     * @returns 
+     */
+    async setPass(user, new_pass) {
+        let _u = await this.UserModel.findOne({ id: user.id });
+        if (_u == null) throw new UserNoFoundException("no existe usuario: " + user.id);
+
+        _u.pass = new_pass;
+        await this.UserModel.updateOne({ id: user.id }, { pass: new_pass });
+        // await _u.save();
+
+        return new User(_u);
+    }
+    /**
+     * 
+     * @param {User} user 
+     * @param {Boolean} active 
+     * @returns 
+     */
+    async setActiveAccount(user, active) {
+        let _u = await this.UserModel.findOne({ id: user.id });
+        if (_u == null) throw new UserNoFoundException("no existe usuario: " + user.id);
+        _u.active = active;
+        await this.UserModel.updateOne({ id: user.id }, { active })
+
+        //await _u.save();
+
+        return new User(_u);
+    }
+
 
     /**
      * 
@@ -88,7 +123,7 @@ class DefaultUserProvider extends IUserProvider {
         new_user.wallet_address_is_set = false;
         new_user.save();
 
-        
+
         return new User(user);
     }
     /**
@@ -98,10 +133,10 @@ class DefaultUserProvider extends IUserProvider {
      */
     async setWalletAddress(user, address) {
         const u = await this.getUserByID(user.id);
-        if(user.wallet_address_is_set == true){
+        if (user.wallet_address_is_set == true) {
             throw new NoModificableWalletAddressException("No se puede cambiar de nuevo la direccion de la wallet.")
         }
-        await this.UserModel.updateOne({ id: user.id }, { wallet_address: address,wallet_address_is_set:true }).exec();
+        await this.UserModel.updateOne({ id: user.id }, { wallet_address: address, wallet_address_is_set: true }).exec();
     }
 
 

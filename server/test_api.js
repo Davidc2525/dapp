@@ -160,9 +160,41 @@ async function set_wallet(addr) {
     }).catch(e => console.log(e))
 }
 
+async function send_active_email() {
+    console.log("send_active_email")
+
+    const query = `
+   query {
+
+    
+    send_active_email{
+       success
+       error {
+         err
+         msg
+       }
+     }
+   
+   }
+`
+    return fetch("http://localhost:5000/api", {
+        method: 'POST', // or 'PUT'
+        body: JSON.stringify({ query }), // data can be `string` or {object}!
+        headers: {
+            'Content-Type': 'application/json',
+            "Authorization": "Bearer " + token
+        }
+    }).then(res => {
+        return res.json()
+
+    }).then(({ data }) => {
+        console.log(((data)))
+    }).catch(e => console.log(e))
+}
+
 async function get_wallet() {
     console.log("get wallet")
-
+    debugger
     const query = `
    query {
 
@@ -210,9 +242,9 @@ async function main() {
 
     //await set_wallet("0x8e0Fc5D403125CDE8C9472B6C02d3b19A552CD1D");
     //await getBalance();
-    console.log(await newBet(0.25))
+    //console.log(await newBet(0.25))
     //await getBalance();
-
+    console.log(await send_active_email())
     console.log(Date.now() - t_s)
     return;
     while (true) {

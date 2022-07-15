@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors'
 import "dotenv/config"
+import generator from "generate-password"
 //console.log(process.env)
 import { graphqlHTTP } from 'express-graphql';
 import api_schema from "../../graphqlSchema.js";
@@ -76,6 +77,46 @@ class App {
                 }
             }
             ,
+            async send_active_email(args, context) {
+                try {
+                    console.log("send_active_email")
+                    const token = getTokenInHeader(context.req);
+
+                    const user = await authm.verify(token);
+                    if(user.active==true) return BodySucces({}) ;
+                    Manager
+                    .getEmailServiceProducerService()
+                    .sendActiveAccount(user);
+                    return BodySucces({})
+
+                } catch (error) {
+                    console.log(error)
+                    return BodyError(error);
+
+                }
+            },
+            async forgot_pass({ email }, context) {
+                try {
+                    const user = await um.getUserByEmail(email);
+                    const new_temp_pass = generator.generate({
+                        length: 10,
+                        numbers: true
+                    });
+                    try {
+                        await Manager.getUserProvider().setPass(user, new_temp_pass);
+                        await Manager
+                            .getEmailServiceProducerService()
+                            .sendForgotPassworrd(user, new_temp_pass);
+                    } catch (error) {
+                        console.log("ERROR no se envio el correo de activacion de cuenta")
+                        console.log(error)
+                    }
+                    return BodySucces();
+                } catch (error) {
+                    return BodyError(error);
+                }
+            }
+            ,
             async create({ email, pass, username }) {
                 //comprobar si existe
                 //TODO validaciones
@@ -87,10 +128,10 @@ class App {
                     console.log(error)
                     if (error.err == "UserNoFound") {
                         try {
-                            console.log("username",await Manager.getUserProvider().getUserByUsername(username));
+                            console.log("username", await Manager.getUserProvider().getUserByUsername(username));
                             return BodyError({ err: "user_exists", msg: "usuario ya existe con ese username" })
                         } catch (error) {
-                            console.log("username",error)
+                            console.log("username", error)
                             if (error.err == "UserNoFound") {
                                 var u = new User();
                                 u.email = email;
@@ -289,6 +330,17 @@ class App {
 
         this.app = express();
         this.app.use(cors())
+        this.app.use("/account/active/:token",async (req,res)=>{
+            try {
+                await Manager.getAuthProvider()
+                .accountVerified(req.params.token);
+                res.redirect('http://localhost:4000/');
+               // res.json({success:true,token:req.params.token,verified:true})
+            } catch (error) {
+                res.json(error);
+            }
+            
+        })
         this.app.use('/api', graphqlHTTP((req, res, next) => {
             return ({
                 schema: schema,
@@ -302,7 +354,7 @@ class App {
         //se inicia el real time server
         Manager.getRealTimeProvider().init();
 
-       
+
         console.log('Running a GraphQL API server at ' + process.env.HOST + ':' + process.env.PORT + '/api');
     }
 }

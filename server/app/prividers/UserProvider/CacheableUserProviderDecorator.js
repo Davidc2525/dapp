@@ -69,10 +69,32 @@ class CacheableUserProviderDecorator {
 
         return this.provider.getUserByEmail(email)
     }
-     /**
-    * @type User
-    */ 
-      async getUserByUsername(username) {return this.provider.getUserByUsername(username)}
+    /**
+   * @type User
+   */
+    async getUserByUsername(username) { return this.provider.getUserByUsername(username) }
+
+    async setPass(user, new_pass) {
+        const u = await this.provider.setPass(user, new_pass);
+
+        const cache = await Manager.getCacheAndPubServiceProvider().createCache("user_provider_id");
+
+        await cache.put(u.id, await this.provider.getUserByID(u.id));
+    }
+
+    /**
+    * 
+    * @param {User} user 
+    * @param {Boolean} active 
+    * @returns 
+    */
+    async setActiveAccount(user, active) {
+        const u = await this.provider.setActiveAccount(user, active);
+
+        const cache = await Manager.getCacheAndPubServiceProvider().createCache("user_provider_id");
+
+        await cache.put(u.id, await this.provider.getUserByID(u.id));
+    }
     /**
      * 
      * @param {User} user 
@@ -86,8 +108,8 @@ class CacheableUserProviderDecorator {
     async setWalletAddress(user, address) {
         await this.provider.setWalletAddress(user, address);
         const cache = await Manager.getCacheAndPubServiceProvider().createCache("user_provider_id");
-        
-        await cache.put(user.id,await this.provider.getUserByID(user.id));
+
+        await cache.put(user.id, await this.provider.getUserByID(user.id));
     }
 
 

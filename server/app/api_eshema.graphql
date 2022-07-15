@@ -89,12 +89,21 @@ type ResponseWallet {
     wallet:String
 } 
 
+
+
+type Response {
+    success :Boolean
+    error:Error
+} 
+
 #API--------------------------------------------------------------------------------
 type Query {
     #user api
     byId(id:String):ResponseUser
     create(email:String!,pass:String!,username:String!):ResponseUser
     login(email:String!,pass:String!):ResponseLogin
+    send_active_email:Response
+    forgot_pass(email:String!):Response
     setwallet(addr:String):ResponseWallet
     wallet:ResponseWallet
 
