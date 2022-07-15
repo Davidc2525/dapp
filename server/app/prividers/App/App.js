@@ -302,38 +302,7 @@ class App {
         //se inicia el real time server
         Manager.getRealTimeProvider().init();
 
-        Manager.getCacheAndPubServiceProvider().subscribe("nc", (m, c) => {
-            console.log(JSON.parse(m), c)
-        })
-        let c = await Manager.getCacheAndPubServiceProvider().createCache("david");
-        c.put("name", "david")
-        c.put("lass", "david")
-        setInterval(async () => {
-            let payload = new Payload("user_win_bet", { msg: "usuario david gano 500$" });
-            // Manager.RealTimeManager.getInstance().broadCast(payload)
-
-            c = await Manager.getCacheAndPubServiceProvider().getCache("david")
-            //console.log(await c.get("name"))
-            //Manager.getCacheAndPubServiceProvider().publish("realtime:1655990440568",JSON.stringify({event:"user_win",payload:{"name":"david"}}))
-
-
-            const price = Manager.getBNBPriceProvider().getPrice();
-            payload = new Payload("bnbprice", { price });
-            Manager.getUserProvider()
-                .getUserByEmail("david@gmail.com")
-                .then(user => {
-
-
-                    //console.log(user.send(payload), payload)
-                    return user;
-
-                }).catch(err => console.log(err))
-
-
-            //Manager.RealTimeManager.getInstance().emitToUser({ id: "1655990440568" }, payload)
-            //console.log(Manager.RealTimeManager.getInstance().io.engine.clientsCount)
-
-        }, 1000)
+       
         console.log('Running a GraphQL API server at ' + process.env.HOST + ':' + process.env.PORT + '/api');
     }
 }

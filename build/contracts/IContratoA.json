@@ -1,0 +1,294 @@
+{
+  "contractName": "IContratoA",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "num",
+          "type": "uint256"
+        }
+      ],
+      "name": "setNumber",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.8.14+commit.80d49f37\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"num\",\"type\":\"uint256\"}],\"name\":\"setNumber\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/ContratoB.sol\":\"IContratoA\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/ContratoB.sol\":{\"keccak256\":\"0x9ccecb6b81933ff632b4e3af4954501a93a838b7baac8c60953fc64eee2aaad4\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://a7eb2c0a51dac319bb01301fd9dfaafc0f2e2bebc7f00d9d247ce52b2fbdbfbb\",\"dweb:/ipfs/QmNgRYkqkZpvusGXLHk5ANQitG77UieZbeNdMPfg9HcY3z\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "immutableReferences": {},
+  "generatedSources": [],
+  "deployedGeneratedSources": [],
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "// SPDX-License-Identifier: MIT\npragma solidity >=0.4.22 <0.9.0;\n\n\ninterface IContratoA{\n\n    function setNumber(uint256 num) external payable;\n\n}\n\ncontract ContratoB{\n\n    address payable addressA;\n    IContratoA private contratoA;\n\n    constructor(address payable _addressA){\n        \n    }\n}",
+  "sourcePath": "/home/david/dapp/contracts/ContratoB.sol",
+  "ast": {
+    "absolutePath": "project:/contracts/ContratoB.sol",
+    "exportedSymbols": {
+      "ContratoB": [
+        288
+      ],
+      "IContratoA": [
+        276
+      ]
+    },
+    "id": 289,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 270,
+        "literals": [
+          "solidity",
+          ">=",
+          "0.4",
+          ".22",
+          "<",
+          "0.9",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "32:32:3"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "IContratoA",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "id": 276,
+        "linearizedBaseContracts": [
+          276
+        ],
+        "name": "IContratoA",
+        "nameLocation": "77:10:3",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "functionSelector": "3fb5c1cb",
+            "id": 275,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "setNumber",
+            "nameLocation": "103:9:3",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 273,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 272,
+                  "mutability": "mutable",
+                  "name": "num",
+                  "nameLocation": "121:3:3",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 275,
+                  "src": "113:11:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 271,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "113:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "112:13:3"
+            },
+            "returnParameters": {
+              "id": 274,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "142:0:3"
+            },
+            "scope": 276,
+            "src": "94:49:3",
+            "stateMutability": "payable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 289,
+        "src": "67:79:3",
+        "usedErrors": []
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "ContratoB",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "id": 288,
+        "linearizedBaseContracts": [
+          288
+        ],
+        "name": "ContratoB",
+        "nameLocation": "157:9:3",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": false,
+            "id": 278,
+            "mutability": "mutable",
+            "name": "addressA",
+            "nameLocation": "189:8:3",
+            "nodeType": "VariableDeclaration",
+            "scope": 288,
+            "src": "173:24:3",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_address_payable",
+              "typeString": "address payable"
+            },
+            "typeName": {
+              "id": 277,
+              "name": "address",
+              "nodeType": "ElementaryTypeName",
+              "src": "173:15:3",
+              "stateMutability": "payable",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address_payable",
+                "typeString": "address payable"
+              }
+            },
+            "visibility": "internal"
+          },
+          {
+            "constant": false,
+            "id": 281,
+            "mutability": "mutable",
+            "name": "contratoA",
+            "nameLocation": "222:9:3",
+            "nodeType": "VariableDeclaration",
+            "scope": 288,
+            "src": "203:28:3",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_contract$_IContratoA_$276",
+              "typeString": "contract IContratoA"
+            },
+            "typeName": {
+              "id": 280,
+              "nodeType": "UserDefinedTypeName",
+              "pathNode": {
+                "id": 279,
+                "name": "IContratoA",
+                "nodeType": "IdentifierPath",
+                "referencedDeclaration": 276,
+                "src": "203:10:3"
+              },
+              "referencedDeclaration": 276,
+              "src": "203:10:3",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IContratoA_$276",
+                "typeString": "contract IContratoA"
+              }
+            },
+            "visibility": "private"
+          },
+          {
+            "body": {
+              "id": 286,
+              "nodeType": "Block",
+              "src": "276:16:3",
+              "statements": []
+            },
+            "id": 287,
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nameLocation": "-1:-1:-1",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 284,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 283,
+                  "mutability": "mutable",
+                  "name": "_addressA",
+                  "nameLocation": "266:9:3",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 287,
+                  "src": "250:25:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address_payable",
+                    "typeString": "address payable"
+                  },
+                  "typeName": {
+                    "id": 282,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "250:15:3",
+                    "stateMutability": "payable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address_payable",
+                      "typeString": "address payable"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "249:27:3"
+            },
+            "returnParameters": {
+              "id": 285,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "276:0:3"
+            },
+            "scope": 288,
+            "src": "238:54:3",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          }
+        ],
+        "scope": 289,
+        "src": "148:146:3",
+        "usedErrors": []
+      }
+    ],
+    "src": "32:262:3"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.8.14+commit.80d49f37.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.4.7",
+  "updatedAt": "2022-06-24T23:54:27.524Z",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}
