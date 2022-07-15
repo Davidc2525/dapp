@@ -103,7 +103,13 @@ class EmailService {
     async sendActiveAccount(user) {
         
         const token = jwt.sign({ id:user.id }, process.env.SECRET, { expiresIn: process.env.SERVICE_EMAIL_TOKEN_EXPIRE });
-        const link = `http://localhost:5000/account/active/${token}`;
+        const host = process.env.SERVICE_BNB_PRICE_HOST;
+        const port = process.env.SERVICE_BNB_PRICE_PORT;
+        const proto = process.env.SERVICE_BNB_PRICE_PROTO;
+
+        const _host = `${proto}${host}:${proto}`
+
+        const link = `${_host}/account/active/${token}`;
         console.log("DEBUG sendActiveAccount", user);
         // send mail with defined transport object
         let info = await this.transporter.sendMail({
