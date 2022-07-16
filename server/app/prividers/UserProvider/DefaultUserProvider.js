@@ -6,6 +6,7 @@ import User from "./User.js";
 
 import Bull from "bull"
 import Manager from "../../managers/Manager.js";
+import { hash_pass } from "../../../../utils/Hash.js";
 
 
 class Exception {
@@ -84,7 +85,7 @@ class DefaultUserProvider extends IUserProvider {
         if (_u == null) throw new UserNoFoundException("no existe usuario: " + user.id);
 
         _u.pass = new_pass;
-        await this.UserModel.updateOne({ id: user.id }, { pass: new_pass });
+        await this.UserModel.updateOne({ id: user.id }, { pass:await hash_pass(new_pass) });
         // await _u.save();
 
         return new User(_u);
@@ -121,6 +122,7 @@ class DefaultUserProvider extends IUserProvider {
         const new_user = new this.UserModel(user);
         new_user.wallet_address = "";
         new_user.wallet_address_is_set = false;
+        new_user.pass = await hash_pass(user.pass);
         new_user.save();
 
 

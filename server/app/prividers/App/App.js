@@ -1,4 +1,5 @@
 import express from 'express';
+import fastify from 'fastify';
 import cors from 'cors'
 import "dotenv/config"
 import generator from "generate-password"
@@ -26,6 +27,8 @@ class App {
     }
 
     async init() {
+
+        console.log("DEBUG APP")
         sm = Manager.getSlotGameProvider();
         um = Manager.UserManager.getInstance();
         bm = Manager.BalanceManager.getInstance();
@@ -115,8 +118,23 @@ class App {
                 } catch (error) {
                     return BodyError(error);
                 }
-            }
-            ,
+            },
+            async change_pass({old_pass,new_pass},context){
+                //TODO agregar logica de cambio de clave
+                try {
+                    console.log("change_pass",old_pass,new_pass);
+                    const token = getTokenInHeader(context.req);
+
+                    const user = await authm.verify(token);
+                    
+                    return BodySucces({})
+
+                } catch (error) {
+                    console.log(error)
+                    return BodyError(error);
+
+                }
+            },
             async create({ email, pass, username }) {
                 //comprobar si existe
                 //TODO validaciones

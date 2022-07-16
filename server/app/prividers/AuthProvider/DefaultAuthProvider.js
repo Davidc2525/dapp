@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import Manager from "../../managers/Manager.js";
 import User from "../UserProvider/User.js"
+import { hash_pass, compare } from "../../../../utils/Hash.js"
 let um;
 const SECRET = "23034087";
 
@@ -28,7 +29,7 @@ export default class DefaultAuthProvider {
         let u = await Manager.UserManager.getInstance().getUserByEmail(email);
         let token = null;
         if (u) {
-            if (pass != u.pass) throw new Exception("invalid_pass", "Clave invalido");
+            if (!await compare(pass, u.pass)) throw new Exception("invalid_pass", "Clave invalido");
 
             u.pass = null;
             token = jwt.sign({ user: u }, SECRET, { expiresIn: "1h" });
@@ -41,22 +42,40 @@ export default class DefaultAuthProvider {
         return token;
 
     }
+    async changePassword(user, old_pass, new_pass) {
 
-    async accountVerified(token){
+
+        if (!old_pass) throw new Exception("invalid_pass", "Clave vacia.");
+        if (!new_pass) throw new Exception("invalid_pass_new_past", "Nueva clave vacia.");
+
+        /**
+         * @type User
+         */
+        //let u = await Manager.UserManager.getInstance().getUserByID(user.id);
+
+        if (!await compare(old_pass, user.pass)) throw new Exception("invalid_pass", "clave actual erronea.");
+
+        if (new_pass.length < 8) throw new Exception("invalid_pass_new_past", "Nueva clave debe tener almenos 8 caracteres");
+        if (old_pass == new_pass) throw new Exception("invalid_pass", "La nueva clave no puede ser igual a la clave antigua");
+
+        await Manager.getUserProvider().setPass(user,new_pass);
+
+    }
+    async accountVerified(token) {
         try {
 
             var decoded = jwt.verify(token, SECRET);
-            
-           // console.log("user id in token",decoded);
+
+            // console.log("user id in token",decoded);
             const user = await (Manager.getUserProvider().getUserByID(decoded.id));
-           
+
             await Manager.getUserProvider()
-            .setActiveAccount(user,true);
+                .setActiveAccount(user, true);
             return true;
         } catch (err) {
             console.log(err)
             if (err.name == "TokenExpiredError") {
-                throw new Exception("token_expired", "token expired, expired: "+err.expiredAt);
+                throw new Exception("token_expired", "token expired, expired: " + err.expiredAt);
             }
             if (err.name == "JsonWebTokenError") {
                 throw new Exception("invalid_token", err.message);
@@ -78,12 +97,13 @@ export default class DefaultAuthProvider {
         try {
 
             var decoded = jwt.verify(token, SECRET);
+           
             return await (Manager.getUserProvider().getUserByID(decoded.user.id));
             return new User(decoded.user);
         } catch (err) {
             console.log(err)
             if (err.name == "TokenExpiredError") {
-                throw new Exception("token_expired", "token expired, expired: "+err.expiredAt);
+                throw new Exception("token_expired", "token expired, expired: " + err.expiredAt);
             }
             if (err.name == "JsonWebTokenError") {
                 throw new Exception("invalid_token", err.message);

@@ -109,7 +109,7 @@ class EmailService {
 
         const _host = `${proto}${host}:${port}`
 
-        const link = `${_host}/account/active/${token}`;
+        const link = `${_host}/account/active?token=${token}`;
         console.log("DEBUG sendActiveAccount", user);
         // send mail with defined transport object
         let info = await this.transporter.sendMail({
