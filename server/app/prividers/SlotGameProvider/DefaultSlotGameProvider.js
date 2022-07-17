@@ -162,10 +162,8 @@ export default class DefaultSlotGameProvider extends SlotGameObservable{
 
         slotGame.amount_win = amount_pay;
 
-        Manager.BalanceManager.getInstance().transferTo(slotGame.user, amount_pay)
-            .catch((error) => {
-                console.log("ERRPR proccessAndSaveGame2 error " + error)
-            });
+        await Manager.BalanceManager.getInstance().transferTo(slotGame.user, amount_pay)
+           
 
         var slotGameModel = await new this.BetModel(slotGame).save();
         slotGame._id = slotGameModel._id;

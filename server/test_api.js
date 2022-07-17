@@ -288,7 +288,9 @@ async function main() {
             //newBet(0.25)
             let d = await newBet(0.25);
             //console.log(d)
-            console.log(c++,Date.now() - t_s);
+            //console.log(c++,Date.now() - t_s);
+            c++;
+            if(c%1000==0) console.log(c);
         } catch (error) {
             console.log(error)
         }
