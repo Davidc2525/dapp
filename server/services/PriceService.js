@@ -90,9 +90,20 @@ async function e() {
 
     router.get('/bnbprice/:from?', async (req, res) => {
         //console.log("new view from: " + req.params.from+", peticion: "+(count++))
-        res.json({ actual_price, interval, from: req.params.from, count })
+        count++;
+        res.json({ actual_price, par: "BNB/USD", interval, from: req.params.from, count })
+    });
+    router.get('/bnbusd/:from?', async (req, res) => {
+        //console.log("new view from: " + req.params.from+", peticion: "+(count++))
+        count++;
+        res.json({ actual_price, par: "BNB/USD", interval, from: req.params.from, count })
     });
 
+    router.get('/usdves/:from?', async (req, res) => {
+        //console.log("new view from: " + req.params.from+", peticion: "+(count++))
+        count++;
+        res.json({ actual_price: 5.87, par: "USD/VES", interval, from: req.params.from, count })
+    });
     router.get('/calc', (req, res) => {
         res.json({ msg: "calc" })
     });

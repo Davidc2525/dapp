@@ -489,7 +489,7 @@ export default class DefaultRealTimeProvider extends SlotGameOserver {
 
             this.emitToUser(user, payload);
 
-            const payload2 = new Payload("inovice_pay", { inovice });
+            const payload2 = new Payload("inovice", { inovice });
 
             this.emitToUser(user, payload2);
         }).catch(err => console.log("ERROR ", err));

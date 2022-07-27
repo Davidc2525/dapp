@@ -7,6 +7,7 @@ export default class APIBasedProvider {
         console.log("DEBUG  -bnb price host:"+process.env.SERVICE_BNB_PRICE_HOST)
         console.log("DEBUG  -bnb price port:"+process.env.SERVICE_BNB_PRICE_PORT)
         this.price = 0;
+        this.usdprice = 5.58;
         this.interval = 0;
 
         this._getBnbPrice()
@@ -19,6 +20,13 @@ export default class APIBasedProvider {
      * @returns precio actual del bnb
      */
     getPrice(){
+        return this.price;
+    }
+
+    getPricePar(_par){
+        if(_par == "BNB") return this.price;
+        if(_par == "USD") return this.usdprice;
+        if(_par == "VES") return this.usdprice;
         return this.price;
     }
 

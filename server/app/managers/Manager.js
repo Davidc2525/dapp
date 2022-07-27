@@ -12,6 +12,7 @@ import BNBPriceManager from "./BNBPriceManager.js";
 import AppManager from "./AppManager.js";
 import CacheAndPubSubManager from "./CacheAndPubSubManager.js";
 import EmailServiceProducerManager from "./EmailServiceProducerManager.js";
+
 export default {
     AppManager,
     RealTimeManager,

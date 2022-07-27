@@ -10,6 +10,7 @@ type User{
     id:String
     username:String
     email:String
+    active:Boolean
     wallet_address:String
     wallet_address_is_set:Boolean
 }
@@ -58,7 +59,7 @@ type Inovice{
     _id:String
     currencypaid:String
     currencyreceived:String
-    create:Int
+    create:String
     app:String
     billing_reason:String
     cunstomer:String
@@ -68,8 +69,10 @@ type Inovice{
     state:String
     method:String
     pricethen:String
+    ref_pay:String
     
 }
+
 type ResponseInovice{
     success:Boolean
     error:Error
@@ -79,7 +82,10 @@ type ResponseInovice{
 type ResponseInovices{
     success:Boolean
     error:Error
-    inovice:[Inovice]
+    from:String
+    show:Int
+    count:Int
+    inovices:[Inovice]
 }
 
 type ResponseWallet {
@@ -98,6 +104,7 @@ type Response {
 type Query {
     #user api
     byId(id:String):ResponseUser
+    user:ResponseUser
     create(email:String!,pass:String!,username:String!):ResponseUser
     login(email:String!,pass:String!):ResponseLogin
     forgot_pass(email:String!):Response
@@ -121,10 +128,26 @@ type Query {
 
 
     #api inovice
-    createinovice(amountpaid:String!,amountreceived:String!):ResponseInovice
+    createinovice(
+        amountpaid:String!,
+        amountreceived:String!,
+        method:String = "CRYPTO",
+        currencypaid:String = "BNB",
+        currencyreceived:String = "USD",
+        app:String = "WEB",
+        description:String = "",
+        ref_pay:String = ""
+    ):ResponseInovice
+    #para pago moviles
+    setrefpay(inoviceid:String!,ref_pay:String!):ResponseInovice
+    
     cancelinovice(inoviceid:String!):ResponseInovice
-    inovices:ResponseInovices
+    inovices(from:String = "TOP",show:Int = 10):ResponseInovices
 
 
+
+    #withward api
+
+    test(name:String):String
     promise:Int
 }

@@ -342,7 +342,7 @@ export default class RedisCacheAndPubSubServiceProvider extends ICacheAndPusSubP
             //realtime
             this.publish("realtime:" + user.id, JSON.stringify(payload))
 
-            const payload2 = new Payload("inovice_pay", { inovice });
+            const payload2 = new Payload("inovice", { inovice });
 
             this.publish("realtime:" + user.id, JSON.stringify(payload2))
         }).catch(err => console.log("ERROR ", err));

@@ -283,18 +283,20 @@ async function main() {
     while (true) {
         
         try {
-            t_s = Date.now()
+            //t_s = Date.now()
            // console.log("new bet: ", (c++, c++));
             //newBet(0.25)
             let d = await newBet(0.25);
             //console.log(d)
             //console.log(c++,Date.now() - t_s);
             c++;
-            if(c%1000==0) console.log(c);
+            if(c%100==0) console.log(c);
+            //if(c%5000==0) break
         } catch (error) {
             console.log(error)
         }
     }
+    console.log("tiempo: ",(Date.now() - t_s)/1000)
 }
 
 main()

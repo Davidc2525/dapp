@@ -14,6 +14,8 @@ import generator from "generate-password"
 import Manager from "../../managers/Manager.js"
 import User from "../UserProvider/User.js"
 import { hash_pass } from '../../../../utils/Hash.js'
+import Inovice, { PayMethods } from '../InoviceProvider/Inovice.js'
+import InoviceServiceProducer from '../../services_produces/InoviceServiceProducer/InoviceServiceProducer.js'
 let sm;
 let um;
 let bm;
@@ -40,7 +42,9 @@ export default class FastifyApp {
     logger.info("Fastify server init")
     const resolvers = {
       Query: {
-        async login(_, { email, pass }) {
+        async login(_, { email, pass }, context) {
+
+          //console.log("token", context.reply.request.auth_token)
 
           //console.log("login ",email,pass,count_login++)
           /**
@@ -77,12 +81,25 @@ export default class FastifyApp {
           } else {
             return BodyError({ err: "user_no_found", msg: "usuario no existe" });
           }
+        },
+        async user(_, arg, context) {
+          //console.debug("ById " + id);
+          try {
+            const token = (context.reply.request.auth_token);
+            let user = await authm.verify(token);
+            user = await um.getUserByID(user.id);
+            return BodySucces({ user });
+
+          } catch (error) {
+            console.log(error)
+            return BodyError(error);
+          }
         }
         ,
         async send_active_email(_, args, context) {
           try {
             console.log("send_active_email")
-            const token = getTokenInHeader(context.reply.request);
+            const token = (context.reply.request.auth_token);
 
             const user = await authm.verify(token);
             //if (user.active == true) return BodySucces({});
@@ -120,12 +137,12 @@ export default class FastifyApp {
         },
         async change_pass(_, { old_pass, new_pass }, context) {
           try {
-            const token = getTokenInHeader(context.reply.request);
+            const token = (context.reply.request.auth_token);
 
             const user = await authm.verify(token);
 
             await Manager.getAuthProvider().changePassword(user, old_pass, new_pass);
-            
+
             return BodySucces({})
 
           } catch (error) {
@@ -135,16 +152,21 @@ export default class FastifyApp {
           }
         },
         async create(_, { email, pass, username }) {
-         
+
 
           try {
+            if (email == "") return BodyError({ err: "email_reqired", msg: "email es un campo requerido" })
+            if (pass == "") return BodyError({ err: "pass_reqired", msg: "pass es un campo requerido" })
+            if (username == "") return BodyError({ err: "username_reqired", msg: "username es un campo requerido" })
             await um.getUserByEmail(email);
             return BodyError({ err: "user_exists", msg: "usuario ya existe con ese correo" })
           } catch (error) {
             console.log(error)
             if (error.err == "UserNoFound") {
               try {
+
                 console.log("username", await Manager.getUserProvider().getUserByUsername(username));
+
                 return BodyError({ err: "user_exists", msg: "usuario ya existe con ese username" })
               } catch (error) {
                 console.log("username", error)
@@ -200,7 +222,7 @@ export default class FastifyApp {
         async balance(_, args, context) {
           //console.log("get balance")
           try {
-            const token = getTokenInHeader(context.reply.request);
+            const token = (context.reply.request.auth_token);
 
             const user = await authm.verify(token);
             //console.log(user)
@@ -243,7 +265,7 @@ export default class FastifyApp {
           //console.log("new bet token " + amount)
 
           try {
-            const token = getTokenInHeader(context.reply.request);
+            const token = context.reply.request.auth_token;
 
             const user = await authm.verify(token);
 
@@ -254,36 +276,82 @@ export default class FastifyApp {
 
             //user.send(new Payload("balance", { balance, bet }));
 
-            return BodySucces({ bet })
+            return BodySucces({ bet, balance })
           } catch (error) {
 
             return BodyError(error)
           }
         },
+        async test(_,{name}){
+          console.log(name)
+          return name;
+        },
         async createinovice(_, {
           amountpaid,
-          amountreceived
+          amountreceived,
+          method,
+          currencypaid,
+          currencyreceived,
+          app,
+          description,
         }, context) {
           console.log("DEBUG newateinovice")
           try {
-            const token = getTokenInHeader(context.reply.request);
+            const token = (context.reply.request.auth_token);
+
+            const user = await authm.verify(token);
+            console.log(user)
+            if (user == null)
+              return BodyError("usuario invalido")
+            /**
+             * @type {Inovice}
+             */
+            let inovice = await inovicem.createInovice();
+
+            inovice.method = method;
+            inovice.create = Date.now().toString();
+            inovice.amountpaid = amountpaid.toString();
+            inovice.amountreceived = amountreceived.toString();
+
+            inovice.currencypaid = currencypaid;
+            inovice.currencyreceived = currencyreceived;
+
+            inovice.app = app;
+            inovice.cunstomer = user.id;
+            if(inovice.method == PayMethods.MOVIL){
+              inovice.pricethen = Manager.getBNBPriceProvider().getPricePar("USD");
+            }else{
+              inovice.pricethen = Manager.getBNBPriceProvider().getPrice();
+            }
+            inovice = await inovicem.saveInovice(inovice)
+            console.log(inovice)
+
+            return BodySucces({ inovice })
+          } catch (error) {
+            console.log(error)
+            if (error.code != undefined) {
+              // return BodyError(error.msg)
+            }
+            return BodyError(error)
+          }
+        },
+        async setrefpay(_, { inoviceid, ref_pay }, context) {
+          console.log("setref",inoviceid,ref_pay)
+          try {
+            const token = (context.reply.request.auth_token);
 
             const user = await authm.verify(token);
             console.log(user)
             if (user == null)
               return BodyError("usuario invalido")
 
-            let inovice = await inovicem.createInovice();
 
-            inovice.amountpaid = amountpaid.toString();
-            inovice.amountreceived = amountreceived.toString();
-            inovice.cunstomer = user.id;
-            inovice = await inovicem.saveInovice(inovice)
+            const inovice = await inovicem.setRefPayInovice(inoviceid, ref_pay);
 
             return BodySucces({ inovice })
           } catch (error) {
             if (error.code != undefined) {
-              // return BodyError(error.msg)
+              //return BodyError(error.msg)
             }
             return BodyError(error)
           }
@@ -291,7 +359,7 @@ export default class FastifyApp {
         async cancelinovice(_, { inoviceid }, context) {
           console.log("DEBUG cancelinovice " + inoviceid)
           try {
-            const token = getTokenInHeader(context.reply.request);
+            const token = (context.reply.request.auth_token);
 
             const user = await authm.verify(token);
             console.log(user)
@@ -309,13 +377,15 @@ export default class FastifyApp {
             return BodyError(error)
           }
         },
-        async inovices() {
-
+        async inovices(_, { from, show }) {
+          console.log(from, show)
+          const inovices = [{ _id: "ascasc" }, { _id: "aksjdhsk" }];
+          return BodySucces({ from, show, count: inovices.length, inovices })
         },
         async setwallet(_, { addr }, context) {
           //console.log("setwallet ", addr);
           try {
-            const token = getTokenInHeader(context.reply.request);
+            const token = (context.reply.request.auth_token);
 
             const user = await authm.verify(token);
 
@@ -330,7 +400,7 @@ export default class FastifyApp {
         async wallet(_, args, context) {
           //console.log("getwallet ");
           try {
-            const token = getTokenInHeader(context.reply.request);
+            const token = (context.reply.request.auth_token);
 
             const user = await authm.verify(token);
             return BodySucces({ user, wallet: user.wallet_address })
@@ -343,13 +413,23 @@ export default class FastifyApp {
       }
     }
     app.register(cors);
-
+    app.addHook('preHandler', (request, reply, done) => {
+      if (request.headers.authorization != null) {
+        const authHeader = request.headers.authorization;
+        const pieces = authHeader.split(" ");
+        if (pieces.length == 2) {
+          request.auth_token = pieces[1];
+        }
+      }
+      //request.auth_token = null;
+      done()
+    })
 
     app.register(mercurius, {
       schema: api_schema,
       resolvers,
       graphiql: true,
-      path: "/api"
+      path: "/api",
 
     })
 
@@ -361,7 +441,7 @@ export default class FastifyApp {
       try {
         if (!req.query.token) return BodyError({ err: "mising_token", msg: "Token requerido." })
         await Manager.getAuthProvider().accountVerified(req.query.token);
-        res.redirect('http://localhost:4000/');
+        res.redirect(process.env.WEB_APP_URL);
         //return ({ success: true, token: req.query.token, verified: true })
       } catch (error) {
         return BodyError(error);
@@ -372,10 +452,14 @@ export default class FastifyApp {
 
 
     app.listen({ port: process.env.PORT, host: process.env.HOST })
-    logger.info("listen in " + process.env.PORT)
+    logger.info("listen in " + process.env.HOST + " " + process.env.PORT)
 
     //se inicia el real time server
     Manager.getRealTimeProvider().init();
+
+
+    //
+    new InoviceServiceProducer();
   }
 }
 

@@ -32,7 +32,7 @@ export default class DefaultAuthProvider {
             if (!await compare(pass, u.pass)) throw new Exception("invalid_pass", "Clave invalido");
 
             u.pass = null;
-            token = jwt.sign({ user: u }, SECRET, { expiresIn: "1h" });
+            token = jwt.sign({ user: u }, SECRET, { expiresIn: "1d" });
             return token;
         } else {
             //throw { code: 3, msg: "user invalid " + email }
@@ -95,6 +95,7 @@ export default class DefaultAuthProvider {
      */
     async verify(token) {
         try {
+            if(token==null)throw new Exception("token_required","auth token is required for this operation.")
 
             var decoded = jwt.verify(token, SECRET);
            
@@ -111,6 +112,7 @@ export default class DefaultAuthProvider {
             if (err.name == "NotBeforeError") {
                 throw new Exception("invalid_token", err.message);
             }
+            throw err;
 
             throw new Exception("invalid_token", "token invalido: " + err.message);
         }
