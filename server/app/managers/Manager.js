@@ -12,7 +12,7 @@ import BNBPriceManager from "./BNBPriceManager.js";
 import AppManager from "./AppManager.js";
 import CacheAndPubSubManager from "./CacheAndPubSubManager.js";
 import EmailServiceProducerManager from "./EmailServiceProducerManager.js";
-
+import AsyncWithDrawManager from "./AsyncWithDrawManager.js";
 export default {
     AppManager,
     RealTimeManager,
@@ -26,6 +26,7 @@ export default {
     AuthManager,
     CacheAndPubSubManager,
     EmailServiceProducerManager,
+    AsyncWithDrawManager,
 
     //nueva version de obtener los providers
     getAppProvider() { return AppManager.getInstance() },
@@ -39,5 +40,6 @@ export default {
     getSlotGameProvider() { return SlotGameManager.getInstance() },
     getAuthProvider() { return AuthManager.getInstance() },
     getCacheAndPubServiceProvider() { return CacheAndPubSubManager.getInstance() },
-    getEmailServiceProducerService() { return EmailServiceProducerManager.getInstance() }
+    getEmailServiceProducerService() { return EmailServiceProducerManager.getInstance() },
+    getAsyncWithDrawFactory() { return AsyncWithDrawManager.getInstance() }
 }

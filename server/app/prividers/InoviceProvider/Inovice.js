@@ -28,13 +28,28 @@ export { State, PayMethods }
 
 class WithdrawDetail {
     created = Date.now().toString();
+
+    setDetails(details) { }
 }
 class WithdrawMovil extends WithdrawDetail {
     code_bank = "";
     id_constumer = "";
-    phone_code = "";
-    phone_number = "";
+    phone_code = "";//+58 venezuela
+    phone_number = "";//0416-5332831
     ref = "";
+
+    setDetails({
+        code_bank = "",
+        id_constumer = "",//documento de identidad
+        phone_code = "",
+        ref = ""
+    }) {
+        this.code_bank = code_bank;
+        this.id_constumer = id_constumer;
+        this.phone_code = phone_code;
+        this.phone_number = phone_number;
+        this.ref = ref;
+    }
 }
 class WithdrawCrypto extends WithdrawDetail {
     /**
@@ -42,6 +57,14 @@ class WithdrawCrypto extends WithdrawDetail {
      */
     address_withdraw = "";
     hash = "";
+
+    setDetails({
+        address_withdraw = "",
+        hash = ""
+    }) {
+        this.address_withdraw = address_withdraw;
+        this.hash = hash;
+    }
 }
 
 class WithdrawDetails {
