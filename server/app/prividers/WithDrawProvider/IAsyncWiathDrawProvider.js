@@ -18,6 +18,8 @@ export default class IAsyncWiathDrawProvider {
      */
     withdraw(user, inovice) { }
 
+    cancelWithdraw(user, inovice) { }
+
     /**
      * Es invocado luego de que el retiro fue 
      * procesado por el servicio correspondiente

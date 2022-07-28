@@ -409,6 +409,9 @@ export default class FastifyApp {
             return BodyError(error)
           }
 
+        },
+        async withdraw(_,{amount},context){
+          return BodySucces({inovice:{amountpaid:amount}})
         }
       }
     }

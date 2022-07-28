@@ -1,7 +1,7 @@
 import IAsyncWiathDrawProvider from "./IAsyncWiathDrawProvider.js";
 
 class Exception {
-    constructor(err,msg) {
+    constructor(err, msg) {
         this.msg = msg;
         this.err = err;
 
@@ -24,7 +24,9 @@ export default class BNBAsyncWithDrawProvider extends IAsyncWiathDrawProvider {
      * @param {Inovice} inovice 
      * @returns {Inovice}
      */
-    withdraw(user, inovice) { }
+    withdraw(user, inovice) {
+
+    }
 
     /**
      * Es invocado luego de que el retiro fue

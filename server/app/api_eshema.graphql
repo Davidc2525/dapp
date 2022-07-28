@@ -125,9 +125,9 @@ type Query {
     newBet(uid:String!,amount:Float!):ResponseBet
 
     newBetToken(amount:Float!):ResponseBet
+    
 
-
-    #api inovice
+    #deposit api
     createinovice(
         amountpaid:String!,
         amountreceived:String!,
@@ -139,14 +139,27 @@ type Query {
         ref_pay:String = ""
     ):ResponseInovice
     #para pago moviles
-    setrefpay(inoviceid:String!,ref_pay:String!):ResponseInovice
-    
+    setrefpay(inoviceid:String!,ref_pay:String!):ResponseInovice    
     cancelinovice(inoviceid:String!):ResponseInovice
-    inovices(from:String = "TOP",show:Int = 10):ResponseInovices
+    inovices(from:String = "TOP",show:Int = 10):ResponseInovices #TODO
 
 
 
-    #withward api
+    #withdraw api
+    withdraw(
+        amount:String!
+        method:String = "CRYPTO"
+
+        #details of crypto
+        #--
+
+        #details of movil
+        code_banck:String = ""
+        id_constume:String = ""
+        phone_code:String = ""
+        phone_number:String = ""
+    ):ResponseInovice
+    cancelwithdraw(inoviceid:String!):ResponseInovice
 
     test(name:String):String
     promise:Int
