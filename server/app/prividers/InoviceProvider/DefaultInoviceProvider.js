@@ -86,6 +86,18 @@ export default class DefaultInoviceProvider extends InoviceObservable {
 
         return ino;
     }
+
+    async updateInovice(inovice){
+        let ino = await new this.InoviceModel(inovice); 
+        await this.InoviceModel.updateOne({_id : new mongoose.Types.ObjectId(inovice._id)},inovice)
+        return ino
+    }
+
+    async loadInovice(inoviceid){
+        let ino = await this.InoviceModel.findById(inoviceid);
+        ino = Inovice.fromInoviceModel(ino);
+        return ino;
+    }
     /**
      * Coloca factura como pagada y transfiere los fondos
      * @param {string} inoviceid id de inovice

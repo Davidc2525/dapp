@@ -140,7 +140,7 @@ export default class DefaultRealTimeProvider extends SlotGameOserver {
         this.is_ready = false;
         this.is_active = JSON.parse(process.env.REAL_TIME_ACTIVE.toLowerCase()) || false;
         this.initialized = false;
-        
+
     }
 
     stop() {
@@ -197,16 +197,16 @@ export default class DefaultRealTimeProvider extends SlotGameOserver {
             });
 
             this.io.on("connection", (socket) => {
-               // console.log("DEBUG  -new connection", socket.handshake.auth)
+                // console.log("DEBUG  -new connection", socket.handshake.auth)
 
                 //console.log("socket.data.user", socket.data.user)
 
                 this._bind_user_connection(socket.data.user, socket)
                     .then(conn_user => {
-                       
-                       // this.emitToUser(conn_user.user, new Payload("connections", { count: conn_user.connectionsCount() }));
-                       // this.notifyNewConnToUser(conn_user)
-                       
+
+                        // this.emitToUser(conn_user.user, new Payload("connections", { count: conn_user.connectionsCount() }));
+                        // this.notifyNewConnToUser(conn_user)
+
                         //TODO agregar logica de subscripcion a pub/sub
                         if (conn_user.connectionsCount() == 1) {
 
@@ -222,7 +222,7 @@ export default class DefaultRealTimeProvider extends SlotGameOserver {
                                     }
                                      */
 
-                                    
+
                                     conn_user.user.send(
                                         new Payload(data.event, data.data)
                                     )
@@ -246,12 +246,12 @@ export default class DefaultRealTimeProvider extends SlotGameOserver {
                     this._find_userconn_by_socket(socket)
                         .then(conn_user => {
                             conn_user.removeCon(new Connection(socket));
-                            
-                            
+
+
                             //this.emitToUser(conn_user.user, new Payload("connections", { count: conn_user.connectionsCount() }));
                             //this.notifyNewConnToUser(conn_user);
 
-                            
+
                             if (conn_user.connectionsCount() == 0) {
 
 
@@ -306,6 +306,10 @@ export default class DefaultRealTimeProvider extends SlotGameOserver {
 
             //add observer to inovice provider observable
             Manager.getInoviceProvider().attach(this)
+
+
+            //add observer no withdraw provider observable
+            Manager.getAsyncWithDrawFactory().attach(this)
         }
     }
 
@@ -484,6 +488,32 @@ export default class DefaultRealTimeProvider extends SlotGameOserver {
      * @param {Inovice} inovice 
      */
     inovicePayToUser(user, inovice) {
+        Manager.getBalanceProvider().getOf(user).then(balance => {
+            const payload = new Payload("balance", { balance });
+
+            this.emitToUser(user, payload);
+
+            const payload2 = new Payload("inovice", { inovice });
+
+            this.emitToUser(user, payload2);
+        }).catch(err => console.log("ERROR ", err));
+
+    }
+
+    //Observadore de withdraw provider
+    nofifyProcessedInovice(user, inovice) {
+        Manager.getBalanceProvider().getOf(user).then(balance => {
+            const payload = new Payload("balance", { balance });
+
+            this.emitToUser(user, payload);
+
+            const payload2 = new Payload("inovice", { inovice });
+
+            this.emitToUser(user, payload2);
+        }).catch(err => console.log("ERROR ", err));
+
+    }
+    nofifyDeclinedInovice(user, inovice) {
         Manager.getBalanceProvider().getOf(user).then(balance => {
             const payload = new Payload("balance", { balance });
 

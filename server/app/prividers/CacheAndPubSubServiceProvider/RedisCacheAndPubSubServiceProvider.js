@@ -189,6 +189,11 @@ export default class RedisCacheAndPubSubServiceProvider extends ICacheAndPusSubP
 
         //add ibserve to realtime provider obserbavle
         //Manager.getRealTimeProvider().attach(this)
+
+
+
+        //add observer to withdraw provider
+        Manager.getAsyncWithDrawFactory().attach(this)
     }
 
     /**
@@ -360,5 +365,35 @@ export default class RedisCacheAndPubSubServiceProvider extends ICacheAndPusSubP
         //realtime
         this.publish("realtime:" + conn_user.user.id, JSON.stringify(payload))
     }
+
+    //Observadores de withdraw provider
+    nofifyProcessedInovice(user, inovice) {
+        Manager.getBalanceProvider().getOf(user).then(balance => {
+            const payload = new Payload("balance", { balance });
+
+            //realtime
+            this.publish("realtime:" + user.id, JSON.stringify(payload))
+
+            const payload2 = new Payload("inovice", { inovice });
+
+            this.publish("realtime:" + user.id, JSON.stringify(payload2))
+        }).catch(err => console.log("ERROR ", err));
+    }
+    nofifyDeclinedInovice(user, inovice) {
+        Manager.getBalanceProvider().getOf(user).then(balance => {
+            const payload = new Payload("balance", { balance });
+
+            //realtime
+            this.publish("realtime:" + user.id, JSON.stringify(payload))
+
+            const payload2 = new Payload("inovice", { inovice });
+
+            this.publish("realtime:" + user.id, JSON.stringify(payload2))
+        }).catch(err => console.log("ERROR ", err));
+    }
+
+    //Observadores de withdraw provider
+
+
 
 }

@@ -55,6 +55,23 @@ type ResponseLogin{
     token:String
     user:User
 }
+
+type WithdrawMovil{
+    code_banck:String
+    id_constume:String
+    phone_code:String
+    phone_number:String
+}
+type WithdrawCrypto{
+    address_withdraw:String
+    hash:String
+}
+type WithdrawDetails{
+
+    movil:WithdrawMovil
+    crypto:WithdrawCrypto
+
+}
 type Inovice{
     _id:String
     currencypaid:String
@@ -70,6 +87,8 @@ type Inovice{
     method:String
     pricethen:String
     ref_pay:String
+    aprobed_msg:String
+    withdraw_details:WithdrawDetails
     
 }
 

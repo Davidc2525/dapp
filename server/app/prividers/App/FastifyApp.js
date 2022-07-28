@@ -14,7 +14,7 @@ import generator from "generate-password"
 import Manager from "../../managers/Manager.js"
 import User from "../UserProvider/User.js"
 import { hash_pass } from '../../../../utils/Hash.js'
-import Inovice, { PayMethods } from '../InoviceProvider/Inovice.js'
+import Inovice, { PayMethods, State } from '../InoviceProvider/Inovice.js'
 import InoviceServiceProducer from '../../services_produces/InoviceServiceProducer/InoviceServiceProducer.js'
 let sm;
 let um;
@@ -282,7 +282,7 @@ export default class FastifyApp {
             return BodyError(error)
           }
         },
-        async test(_,{name}){
+        async test(_, { name }) {
           console.log(name)
           return name;
         },
@@ -318,9 +318,9 @@ export default class FastifyApp {
 
             inovice.app = app;
             inovice.cunstomer = user.id;
-            if(inovice.method == PayMethods.MOVIL){
+            if (inovice.method == PayMethods.MOVIL) {
               inovice.pricethen = Manager.getBNBPriceProvider().getPricePar("USD");
-            }else{
+            } else {
               inovice.pricethen = Manager.getBNBPriceProvider().getPrice();
             }
             inovice = await inovicem.saveInovice(inovice)
@@ -336,7 +336,7 @@ export default class FastifyApp {
           }
         },
         async setrefpay(_, { inoviceid, ref_pay }, context) {
-          console.log("setref",inoviceid,ref_pay)
+          console.log("setref", inoviceid, ref_pay)
           try {
             const token = (context.reply.request.auth_token);
 
@@ -410,8 +410,88 @@ export default class FastifyApp {
           }
 
         },
-        async withdraw(_,{amount},context){
-          return BodySucces({inovice:{amountpaid:amount}})
+        async withdraw(_, {
+          amount,
+          method,
+          code_banck,
+          id_constume,
+          phone_code,
+          phone_number
+        }, context) {
+          try {
+            const token = (context.reply.request.auth_token);
+            /**
+             * @type User
+             */
+            const user = await authm.verify(token);
+
+            if (method != PayMethods.MOVIL && method != PayMethods.CRYPTO) {
+              return BodyError({
+                err: "incorrect_withdraw_method",
+                msg: "Metodos de retiro : MOVIL, CRYPTO"
+              })
+            }
+            /**
+            * @type {Inovice}
+            */
+            let inovice = await inovicem.createInovice();
+            inovice.create = Date.now() + "";
+            inovice.billing_reason = "withdraw";
+            inovice.method = method;
+            inovice.currencypaid = "USD_FROM_CREDIT"
+            inovice.amountpaid = amount;
+            inovice.cunstomer = user.id;
+
+            inovice.description = "Retiro de balance"
+
+            if (method == PayMethods.MOVIL) {
+
+              inovice.withdraw_details.movil.code_banck = code_banck;
+              inovice.withdraw_details.movil.id_constume = id_constume;
+              inovice.withdraw_details.movil.phone_code = phone_code;
+              inovice.withdraw_details.movil.phone_number = phone_number;
+
+              inovice.pricethen = Manager.getBNBPriceProvider().getPricePar("USD");
+
+              inovice.currencyreceived = "VES"
+
+              inovice.amountreceived = parseFloat(amount) * inovice.pricethen;
+            } else {
+              inovice.withdraw_details.crypto.address_withdraw = user.wallet_address;
+              inovice.pricethen = Manager.getBNBPriceProvider().getPrice();
+              inovice.currencyreceived = "BNB"
+
+              inovice.amountreceived = parseFloat(amount) / inovice.pricethen;
+            }
+            const balance = await Manager.getBalanceProvider().getOf(user);
+            if (parseFloat(inovice.amountpaid) > balance.balance) {
+              inovice.state = State.DECLINED;
+              inovice.aprobed_msg = "Balance insuficiente"
+              inovice = await inovicem.saveInovice(inovice)
+
+              return BodyError({
+                err: "insufficient_balance",
+                msg: "Balance insuficiente"
+              })
+
+            } else {
+              inovice.state = State.PENDING
+              inovice.aprobed_msg = "Procesando retiro de credito"
+              inovice = await inovicem.saveInovice(inovice)
+             // await Manager.getBalanceProvider().transferFrom(user, parseFloat(inovice.amountpaid))
+
+            }
+
+
+
+            const wp = Manager.getAsyncWithDrawFactory().getProvider(inovice);
+            inovice = await wp.withdraw(user, inovice);
+            return BodySucces({ inovice })
+          } catch (error) {
+            console.log("csm", error)
+            return BodyError(error)
+          }
+
         }
       }
     }

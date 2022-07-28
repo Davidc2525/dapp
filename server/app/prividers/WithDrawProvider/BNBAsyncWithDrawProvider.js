@@ -1,5 +1,7 @@
 import IAsyncWiathDrawProvider from "./IAsyncWiathDrawProvider.js";
-
+import Bull from "bull";
+import Manager from "../../managers/Manager.js";
+import Inovice, { State } from "../InoviceProvider/Inovice.js";
 class Exception {
     constructor(err, msg) {
         this.msg = msg;
@@ -16,6 +18,13 @@ export default class BNBAsyncWithDrawProvider extends IAsyncWiathDrawProvider {
         super();
 
         console.log("DEBUG BNBAsyncWithDrawProvider");
+
+        this.queue = new Bull("withdraw_bnb");
+        this.queue_response = new Bull("withdraw_bnb_response");
+
+        this.queue_response.process((job, done) => {
+
+        })
     }
 
     /**
@@ -24,8 +33,18 @@ export default class BNBAsyncWithDrawProvider extends IAsyncWiathDrawProvider {
      * @param {Inovice} inovice 
      * @returns {Inovice}
      */
-    withdraw(user, inovice) {
+    async withdraw(user, inovice) {
+        console.log("DEBUG BNB WITHDRAW: ", user, inovice)
 
+        await Manager.getBalanceProvider().transferFrom(user, parseFloat(inovice.amountpaid))
+
+        inovice = await this.withdrawalDeclined(inovice._id, "testing")
+        return inovice
+        this.queue.add({
+            event: "withdraw",
+            user,
+            inovice
+        });
     }
 
     /**
@@ -40,7 +59,25 @@ export default class BNBAsyncWithDrawProvider extends IAsyncWiathDrawProvider {
      *
      * @param {string} inoviceid
      */
-    withdrawalProcessed(inoviceid) { }
+    async withdrawalProcessed(inoviceid) {
+        console.log("DEBUG MOVIL withdrawalProcessed: ", inoviceid);
+        /**
+         * @type {Inovice}
+         */
+        let ino = await Manager.getInoviceProvider().loadInovice(inoviceid);
+        console.log(ino)
+        let user = await Manager.getUserProvider().getUserByID(ino.cunstomer);
+
+        ino.state = State.COMPLETED;
+        ino.aprobed_msg = "Retiro exitoso";
+
+        //await Manager.getBalanceProvider().transferTo(user, parseFloat(ino.amountpaid))
+
+        await Manager.getInoviceProvider().updateInovice(ino)
+
+        this.nofifyProcessedInovice(user,ino);
+        return ino;
+     }
 
 
     /**
@@ -48,7 +85,26 @@ export default class BNBAsyncWithDrawProvider extends IAsyncWiathDrawProvider {
      * @param {string} inoviceid
      * @param {string} reason razon por la cual ser rechazo el retiro
      */
-    withdrawalDeclined(inoviceid, reason) { }
+    async withdrawalDeclined(inoviceid, reason) {
+        console.log("DEBUG MOVIL withdrawalDeclined: ", inoviceid, reason);
+        /**
+         * @type {Inovice}
+         */
+        let ino = await Manager.getInoviceProvider().loadInovice(inoviceid);
+        console.log(ino)
+        let user = await Manager.getUserProvider().getUserByID(ino.cunstomer);
+
+        ino.state = State.DECLINED;
+        ino.aprobed_msg = reason;
+
+        await Manager.getBalanceProvider().transferTo(user, parseFloat(ino.amountpaid))
+
+        await Manager.getInoviceProvider().updateInovice(ino)
+
+        this.nofifyDeclinedInovice(user,ino);
+        return ino;
+    }
+
 
     /**
      * se llama cuando en el servicio de retiro se produce un error
@@ -57,7 +113,7 @@ export default class BNBAsyncWithDrawProvider extends IAsyncWiathDrawProvider {
      * @param {string} err nombre del error
      * @param {string} msg descripcion del error
      */
-    withdrawalError(inoviceid, err, msg) { }
+    async withdrawalError(inoviceid, err, msg) { }
 
 
 }

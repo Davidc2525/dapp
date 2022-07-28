@@ -3,12 +3,59 @@
 
 import Inovice from "../InoviceProvider/Inovice.js";
 
+class AsyncWithDrawObservable {
+    constructor() {
 
+        /**
+         * @type {AsyncWithDrawObserver[]}
+         */
+        this.observers = [];
+    }
+
+    attach(observer) {
+        this.observers.push(observer);
+    }
+    detach() {
+        //TODO
+    }
+
+    nofifyProcessedInovice(user,inovice) {
+        for (let index = 0; index < this.observers.length; index++) {
+            const observer = this.observers[index];
+            try {
+                observer.nofifyProcessedInovice(user, inovice);
+            } catch (error) {
+                console.error("ERROR in observer", error)
+            }
+
+        }
+    }
+
+    nofifyDeclinedInovice(user,inovice) {
+        for (let index = 0; index < this.observers.length; index++) {
+            const observer = this.observers[index];
+            try {
+                observer.nofifyDeclinedInovice(user, inovice);
+            } catch (error) {
+                console.error("ERROR in observer", error)
+            }
+
+        }
+    }
+}
+class AsyncWithDrawObserver {
+    nofifyProcessedInovice(user,inovice) {
+
+    }
+    nofifyDeclinedInovice(user,inovice) {
+
+    }
+}
 /**
  * interfas de metodos de retiro de credito asincronos (basado en servicios)
  * @interface IAsyncWiathDrawProvider
  */
-export default class IAsyncWiathDrawProvider {
+export default class IAsyncWiathDrawProvider extends AsyncWithDrawObservable {
 
     /**
      * 
@@ -16,9 +63,9 @@ export default class IAsyncWiathDrawProvider {
      * @param {Inovice} inovice 
      * @returns {Inovice}
      */
-    withdraw(user, inovice) { }
+    async withdraw(user, inovice) { }
 
-    cancelWithdraw(user, inovice) { }
+    //cancelWithdraw(user, inovice) { }
 
     /**
      * Es invocado luego de que el retiro fue 
@@ -32,7 +79,7 @@ export default class IAsyncWiathDrawProvider {
      * 
      * @param {string} inoviceid 
      */
-    withdrawalProcessed(inoviceid) { }
+    async withdrawalProcessed(inoviceid) { }
 
 
     /**
@@ -40,7 +87,7 @@ export default class IAsyncWiathDrawProvider {
      * @param {string} inoviceid 
      * @param {string} reason razon por la cual ser rechazo el retiro
      */
-    withdrawalDeclined(inoviceid, reason) { }
+    async withdrawalDeclined(inoviceid, reason) { }
 
     /**
      * se llama cuando en el servicio de retiro se produce un error
@@ -49,7 +96,7 @@ export default class IAsyncWiathDrawProvider {
      * @param {string} err nombre del error
      * @param {string} msg descripcion del error
      */
-    withdrawalError(inoviceid, err, msg) { }
+    async withdrawalError(inoviceid, err, msg) { }
 
 }
 

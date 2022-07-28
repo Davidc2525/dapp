@@ -30,4 +30,9 @@ export default class AsyncWithDrawFactory {
 
     }
 
+    attach(observer) {
+        this.bnbwithdraw.attach(observer);
+        this.movilwithdraw.attach(observer);
+    }
+
 }

@@ -3,7 +3,7 @@ import AsyncWithDrawFactory from "../prividers/WithDrawProvider/AsyncWithDrawFac
 
 
 /**
- * @type App
+ * @type AsyncWithDrawFactory
  */
 let instance = null;
 class AsyncWithDrawManager {
