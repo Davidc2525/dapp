@@ -9,6 +9,7 @@ const reader = readline.createInterface({
 });
 
 
+
 class FakeAdminConsumer {
     constructor(queue_name) {
         this.queue = new Bull(queue_name);
