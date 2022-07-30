@@ -24,7 +24,17 @@ export default class MovilAsyncWithDrawProvider extends IAsyncWiathDrawProvider 
         this.queue_response = new Bull("withdraw_movil_response");
 
         this.queue_response.process((job, done) => {
+            console.log(job)
+            if (job.data.event == "withdraw_proccesed") {
+                if (job.data.withdraw_aprobed) {
+                    this.withdrawalProcessed(job.data.inoviceid, { ref: job.data.ref })
 
+                } else {
+                    this.withdrawalDeclined(job.data.inoviceid, job.data.reason, {})
+                }
+            }
+
+            done();
         })
     }
 
@@ -39,7 +49,14 @@ export default class MovilAsyncWithDrawProvider extends IAsyncWiathDrawProvider 
         console.log("DEBUG MOVIL WITHDRAW: ", user, inovice);
         await Manager.getBalanceProvider().transferFrom(user, parseFloat(inovice.amountpaid))
 
-        inovice = await this.withdrawalProcessed(inovice._id)
+        this.queue.add({
+            event: "withdraw",
+            user,
+            inovice
+        });
+
+        this.nofifyProcessedInovice(user, inovice);
+
         return inovice
     }
 
@@ -54,8 +71,9 @@ export default class MovilAsyncWithDrawProvider extends IAsyncWiathDrawProvider 
      * luego este metodo se encarga de actualizar los balances
      *
      * @param {string} inoviceid
+     * @param {any} payload objeto para pasar cualquier otro dato
      */
-    async withdrawalProcessed(inoviceid) {
+    async withdrawalProcessed(inoviceid, payload) {
         console.log("DEBUG MOVIL withdrawalProcessed: ", inoviceid);
         /**
          * @type {Inovice}
@@ -66,6 +84,8 @@ export default class MovilAsyncWithDrawProvider extends IAsyncWiathDrawProvider 
 
         ino.state = State.COMPLETED;
         ino.aprobed_msg = "Retiro exitoso";
+        ino.withdraw_details.movil.ref = payload.ref;
+        ino.ref_pay = payload.ref;
 
         //await Manager.getBalanceProvider().transferTo(user, parseFloat(ino.amountpaid))
 
@@ -80,8 +100,9 @@ export default class MovilAsyncWithDrawProvider extends IAsyncWiathDrawProvider 
      * se llama cuando el servicio rechaza la retirada de credito
      * @param {string} inoviceid
      * @param {string} reason razon por la cual ser rechazo el retiro
+     * @param {any} payload objeto para pasar cualquier otro dato
      */
-    async withdrawalDeclined(inoviceid, reason) {
+    async withdrawalDeclined(inoviceid, reason, payload) {
         console.log("DEBUG MOVIL withdrawalDeclined: ", inoviceid, reason);
         /**
          * @type {Inovice}
@@ -106,8 +127,9 @@ export default class MovilAsyncWithDrawProvider extends IAsyncWiathDrawProvider 
      * @param {string} inoviceid
      * @param {string} err nombre del error
      * @param {string} msg descripcion del error
+     * @param {any} payload objeto para pasar cualquier otro dato
      */
-    async withdrawalError(inoviceid, err, msg) {
+    async withdrawalError(inoviceid, err, msg, payload) {
         return await this.withdrawalDeclined(inoviceid, err + ":" + msg);
     }
 

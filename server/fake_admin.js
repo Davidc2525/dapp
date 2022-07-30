@@ -14,6 +14,9 @@ class FakeAdminConsumer {
         this.queue = new Bull(queue_name);
         this.queue_response = new Bull(queue_name + "_response");
 
+        this.withdraw_queue = new Bull("withdraw_movil");
+        this.withdraw_queue_response = new Bull("withdraw_movil_response");
+        this.withdraw_queue.process(this.process.bind(this))
 
         this.queue.process(this.process.bind(this));
         console.log("FakeAdminConsumer")
@@ -45,6 +48,53 @@ class FakeAdminConsumer {
                         
                         //reader.close();
                     });
+                });
+
+               
+               
+
+            } catch (error) {
+                console.log(error)
+                done(error);
+            }
+
+        }
+
+        if (job.data.event == "withdraw") {
+            try {
+                reader.question(`Nuevo retiro a ${job.data.user.username} de ${job.data.inovice.amountpaid}$`, aprobe => {
+                    let withdraw_aprobed = JSON.parse(aprobe)
+
+
+                    if(withdraw_aprobed){
+                        reader.question(`referencia de pago ?`, ref => {
+                   
+                        
+                            this.withdraw_queue_response.add({
+                                event: "withdraw_proccesed",
+                                inoviceid: job.data.inovice._id,
+                                withdraw_aprobed,
+                                ref
+                            })
+                            done();
+                            
+                            //reader.close();
+                        });
+                    }else{
+                        reader.question(`razon de rechazo ?`, reason => {
+                   
+                        
+                            this.withdraw_queue_response.add({
+                                event: "withdraw_proccesed",
+                                inoviceid: job.data.inovice._id,
+                                withdraw_aprobed,
+                                reason
+                            })
+                            done();
+                            
+                            //reader.close();
+                        });
+                    }
                 });
 
                

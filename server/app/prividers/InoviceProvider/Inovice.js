@@ -37,11 +37,12 @@ class WithdrawMovil extends WithdrawDetail {
     phone_code = "";//+58 venezuela
     phone_number = "";//0416-5332831
     ref = "";
-
+    
     setDetails({
         code_bank = "",
         id_constumer = "",//documento de identidad
         phone_code = "",
+        phone_number = "",
         ref = ""
     }) {
         this.code_bank = code_bank;
@@ -49,6 +50,8 @@ class WithdrawMovil extends WithdrawDetail {
         this.phone_code = phone_code;
         this.phone_number = phone_number;
         this.ref = ref;
+
+        return this;
     }
 }
 class WithdrawCrypto extends WithdrawDetail {
@@ -64,6 +67,8 @@ class WithdrawCrypto extends WithdrawDetail {
     }) {
         this.address_withdraw = address_withdraw;
         this.hash = hash;
+
+        return this;
     }
 }
 
@@ -136,6 +141,8 @@ export default class Inovice {
         ino.pricethen = inoviceModel.pricethen;
         ino.aprobed_msg = inoviceModel.aprobed_msg;
 
+        ino.withdraw_details.movil = new WithdrawMovil().setDetails(inoviceModel.withdraw_details.movil);
+        ino.withdraw_details.crypto = new WithdrawCrypto().setDetails(inoviceModel.withdraw_details.crypto);
         return ino;
     }
 }

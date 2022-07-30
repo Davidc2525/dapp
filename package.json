@@ -13,6 +13,7 @@
     "email-service-dev": "nodemon server/services/EmailService/EmailService.js",
     "price-service": "node server/services/PriceService.js",
     "price-service-dev": "nodemon server/services/PriceService.js",
+    "bnb-withdraw-service": "node server/services/BNBWithDrawService/BNBWithDrawService.cjs",
     "db": "mongod --dbpath ~/data"
   },
   "type": "module",

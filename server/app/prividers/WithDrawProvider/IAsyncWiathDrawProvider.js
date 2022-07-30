@@ -78,16 +78,18 @@ export default class IAsyncWiathDrawProvider extends AsyncWithDrawObservable {
      * luego este metodo se encarga de actualizar los balances
      * 
      * @param {string} inoviceid 
+     * @param {any} payload objeto para pasar cualquier otro dato
      */
-    async withdrawalProcessed(inoviceid) { }
+    async withdrawalProcessed(inoviceid,payload) { }
 
 
     /**
      * se llama cuando el servicio rechaza la retirada de credito
      * @param {string} inoviceid 
      * @param {string} reason razon por la cual ser rechazo el retiro
+     * @param {any} payload objeto para pasar cualquier otro dato
      */
-    async withdrawalDeclined(inoviceid, reason) { }
+    async withdrawalDeclined(inoviceid, reason,payload) { }
 
     /**
      * se llama cuando en el servicio de retiro se produce un error
@@ -95,8 +97,9 @@ export default class IAsyncWiathDrawProvider extends AsyncWithDrawObservable {
      * @param {string} inoviceid 
      * @param {string} err nombre del error
      * @param {string} msg descripcion del error
+     * @param {any} payload objeto para pasar cualquier otro dato
      */
-    async withdrawalError(inoviceid, err, msg) { }
+    async withdrawalError(inoviceid, err, msg,payload) { }
 
 }
 

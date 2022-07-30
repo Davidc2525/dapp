@@ -81,19 +81,48 @@ export default class DefaultInoviceProvider extends InoviceObservable {
      */
     async saveInovice(inovice) {
         let ino = await new this.InoviceModel(inovice);
-        ino = Inovice.fromInoviceModel(await ino.save());
+        await ino.save()
+        console.log("DEBUG      saveinovice ", inovice)
 
+        ino = Inovice.fromInoviceModel(ino);
+        console.log("DEBUG      saveinovice ", ino)
 
         return ino;
     }
+    /**
+     * 
+     * @param {User} user 
+     * @param {string} from 
+     * @param {number} show 
+     * @returns {Promise<Inovice[]>}
+     */
+    async loadInovices(user, from, show) {
+        let inovices = [];
+        let cursor;
+        if (from == "TOP") {
+            cursor = this.InoviceModel.find({ cunstomer: user.id }).limit(show).cursor();
+        }
 
-    async updateInovice(inovice){
-        let ino = await new this.InoviceModel(inovice); 
-        await this.InoviceModel.updateOne({_id : new mongoose.Types.ObjectId(inovice._id)},inovice)
+        if (from != "TOP") {
+            cursor = this.InoviceModel.find({ cunstomer: user.id, _id: { $gt: new mongoose.Types.ObjectId(from) } })
+                .limit(show)
+                .cursor();
+        }
+
+        for (let doc = await cursor.next(); doc != null; doc = await cursor.next()) {
+           // console.log(doc); // Prints documents one at a time
+            inovices.unshift(doc)
+        }
+
+        return inovices;
+    }
+    async updateInovice(inovice) {
+        let ino = await new this.InoviceModel(inovice);
+        await this.InoviceModel.updateOne({ _id: new mongoose.Types.ObjectId(inovice._id) }, inovice)
         return ino
     }
 
-    async loadInovice(inoviceid){
+    async loadInovice(inoviceid) {
         let ino = await this.InoviceModel.findById(inoviceid);
         ino = Inovice.fromInoviceModel(ino);
         return ino;
@@ -108,7 +137,7 @@ export default class DefaultInoviceProvider extends InoviceObservable {
         console.log("DEBUG setpayinovice ", inoviceid)
         let id = mongoose.Types.ObjectId(inoviceid);
 
-        await this.InoviceModel.updateOne({ _id: id }, { state: State.COMPLETED ,aprobed_msg:"Deposito aprobado."});
+        await this.InoviceModel.updateOne({ _id: id }, { state: State.COMPLETED, aprobed_msg: "Deposito aprobado." });
 
         const inovice = await this.InoviceModel.findOne({ _id: id });
         const user = await Manager.UserManager.getInstance().getUserByID(inovice.cunstomer);

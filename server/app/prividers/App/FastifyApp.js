@@ -377,10 +377,23 @@ export default class FastifyApp {
             return BodyError(error)
           }
         },
-        async inovices(_, { from, show }) {
-          console.log(from, show)
-          const inovices = [{ _id: "ascasc" }, { _id: "aksjdhsk" }];
-          return BodySucces({ from, show, count: inovices.length, inovices })
+        async inovices(_, { from, show }, context) {
+
+
+          try {
+            const token = (context.reply.request.auth_token);
+
+            const user = await authm.verify(token);
+
+            console.log(from, show)
+            let inovices = [];
+
+            inovices = await Manager.getInoviceProvider().loadInovices(user, from, show)
+            return BodySucces({ from, show, count: inovices.length, inovices })
+          } catch (error) {
+            return BodyError(error)
+          }
+
         },
         async setwallet(_, { addr }, context) {
           //console.log("setwallet ", addr);
@@ -413,8 +426,8 @@ export default class FastifyApp {
         async withdraw(_, {
           amount,
           method,
-          code_banck,
-          id_constume,
+          code_bank,
+          id_constumer,
           phone_code,
           phone_number
         }, context) {
@@ -446,8 +459,8 @@ export default class FastifyApp {
 
             if (method == PayMethods.MOVIL) {
 
-              inovice.withdraw_details.movil.code_banck = code_banck;
-              inovice.withdraw_details.movil.id_constume = id_constume;
+              inovice.withdraw_details.movil.code_bank = code_bank;
+              inovice.withdraw_details.movil.id_constumer = id_constumer;
               inovice.withdraw_details.movil.phone_code = phone_code;
               inovice.withdraw_details.movil.phone_number = phone_number;
 
@@ -478,7 +491,7 @@ export default class FastifyApp {
               inovice.state = State.PENDING
               inovice.aprobed_msg = "Procesando retiro de credito"
               inovice = await inovicem.saveInovice(inovice)
-             // await Manager.getBalanceProvider().transferFrom(user, parseFloat(inovice.amountpaid))
+              // await Manager.getBalanceProvider().transferFrom(user, parseFloat(inovice.amountpaid))
 
             }
 

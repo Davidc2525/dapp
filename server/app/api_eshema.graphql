@@ -57,10 +57,11 @@ type ResponseLogin{
 }
 
 type WithdrawMovil{
-    code_banck:String
-    id_constume:String
+    code_bank:String
+    id_constumer:String
     phone_code:String
     phone_number:String
+    ref:String
 }
 type WithdrawCrypto{
     address_withdraw:String
@@ -173,8 +174,8 @@ type Query {
         #--
 
         #details of movil
-        code_banck:String = ""
-        id_constume:String = ""
+        code_bank:String = ""
+        id_constumer:String = ""
         phone_code:String = ""
         phone_number:String = ""
     ):ResponseInovice
