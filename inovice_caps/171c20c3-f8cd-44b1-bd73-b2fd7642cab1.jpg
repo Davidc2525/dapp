@@ -1,0 +1,6 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Enlace a Vite App
+Type=Link
+URL=http://localhost:4000/game
+Icon=text-html

@@ -3,19 +3,24 @@
 import fastify from 'fastify'
 import mercurius from 'mercurius'
 import cors from "@fastify/cors"
+import fastifyStatic from "@fastify/static"
 import logger from '../../../../utils/Logger.js'
 import "dotenv/config"
 import api_schema from "../../graphqlSchema.js";
-
-
+import { v4 as uuidv4 } from 'uuid';
+import fileupload from "fastify-file-upload"
 import "dotenv/config"
 import generator from "generate-password"
+import * as url from 'url';
+const __dirname = url.fileURLToPath(new URL('../../../../', import.meta.url));
+import path from 'path'
 //console.log(process.env)
 import Manager from "../../managers/Manager.js"
 import User from "../UserProvider/User.js"
 import { hash_pass } from '../../../../utils/Hash.js'
 import Inovice, { PayMethods, State } from '../InoviceProvider/Inovice.js'
 import InoviceServiceProducer from '../../services_produces/InoviceServiceProducer/InoviceServiceProducer.js'
+import fs from "node:fs/promises"
 let sm;
 let um;
 let bm;
@@ -508,6 +513,11 @@ export default class FastifyApp {
         }
       }
     }
+    app.register(fileupload);
+    app.register(fastifyStatic, {
+      
+      root: path.join(__dirname, './inovice_caps'),
+    })
     app.register(cors);
     app.addHook('preHandler', (request, reply, done) => {
       if (request.headers.authorization != null) {
@@ -544,8 +554,68 @@ export default class FastifyApp {
       }
 
     });
+    app.get("/inovice/img_ref/:id", async (req, res) => {
+
+      const file_id = req.params.id;
+      const file_name =  file_id + ".jpg";
+      return res.sendFile(file_name) 
+
+    });
 
 
+
+    const config_upload = {
+      schema: {
+        summary: 'upload file',
+        body: {
+          type: 'object',
+          properties: {
+            inoviceid: { type: "string" },
+            toke: { type: "string" },
+            file: { type: 'object' }
+          },
+          required: ['file', "inoviceid","token"]
+        }
+      },
+      handler: async (req, res) => {
+        const files = req.raw.files;
+        const token = req.body.token;
+        let user;
+
+        try {
+          user = await Manager.getAuthProvider().verify(token);
+        } catch (error) {
+          return BodyError(error);
+        }
+
+        if (files.file) {
+          if (!req.body.inoviceid) return BodyError({ err: "inoviceid_required", msg: "id inovice required" })
+          //console.log(req.body.inoviceid, files);
+          const inoviceid = req.body.inoviceid;
+          const file = files.file;
+          const data = files.file["data"];
+          const file_id = uuidv4();
+          const file_name = "./inovice_caps/" + file_id + ".jpg";
+          try {
+            await fs.writeFile(file_name, data);
+            const inovice = await Manager
+              .getInoviceProvider()
+              .setImgRefPayInovice(inoviceid, file_id);
+
+            res.send({ success: true, inovice });
+
+          } catch (error) {
+            console.log(error)
+            return BodyError({ err: "save_file_error", msg: "ocurrio un error" })
+
+          }
+        } else {
+          return BodyError({ err: "no_file", msg: "debe suministrar un archivo con la informacion del deposito" })
+        }
+
+      }
+    }
+    app.post("/inovice/cap", config_upload);
 
     app.listen({ port: process.env.PORT, host: process.env.HOST })
     logger.info("listen in " + process.env.HOST + " " + process.env.PORT)

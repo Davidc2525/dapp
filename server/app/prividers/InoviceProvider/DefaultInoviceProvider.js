@@ -30,7 +30,8 @@ export default class DefaultInoviceProvider extends InoviceObservable {
             id_constumer: { type: String },
             phone_code: { type: String },
             phone_number: { type: String },
-            ref: { type: String }
+            ref: { type: String },
+            img_ref: { type: String }
         })
 
         const withdraw_details = new mongoose.Schema({
@@ -53,6 +54,7 @@ export default class DefaultInoviceProvider extends InoviceObservable {
             method: { type: String, index: true },
             pricethen: { type: String },
             ref_pay: { type: String, index: true },
+            img_ref_pay: { type: String },
             aprobed_msg: { type: String },
 
             withdraw_details: { type: withdraw_details }
@@ -110,7 +112,7 @@ export default class DefaultInoviceProvider extends InoviceObservable {
         }
 
         for (let doc = await cursor.next(); doc != null; doc = await cursor.next()) {
-           // console.log(doc); // Prints documents one at a time
+            // console.log(doc); // Prints documents one at a time
             inovices.unshift(doc)
         }
 
@@ -227,6 +229,25 @@ export default class DefaultInoviceProvider extends InoviceObservable {
             const user = await Manager.UserManager.getInstance().getUserByID(inovice.cunstomer);
             await this.notifyNewPayWithMovilMethod(user, inovice);
         }
+
+        return inovice;
+    }
+
+    async setImgRefPayInovice(inoviceid, img_ref_pay) {
+        console.log("DEBUG setImgRefPayInovice ", inoviceid, img_ref_pay);
+        let id = mongoose.Types.ObjectId(inoviceid);
+        //console.log("ID", id)
+        /**
+         * @type {Inovice}
+         */
+        var inovice = await this.InoviceModel.findOne({ _id: id });
+        if (!inovice) throw new Exception("inovice_no_found", "no se encontro la factura correspondiente. Comuniquese con el administrador.")
+
+        await this.InoviceModel.updateOne({ _id: id }, { img_ref_pay });
+        inovice.img_ref_pay = img_ref_pay;
+
+        inovice = Inovice.fromInoviceModel(inovice);
+        //inovice.img_ref = img_ref;
 
         return inovice;
     }

@@ -37,20 +37,22 @@ class WithdrawMovil extends WithdrawDetail {
     phone_code = "";//+58 venezuela
     phone_number = "";//0416-5332831
     ref = "";
+    img_ref = "";
     
     setDetails({
         code_bank = "",
         id_constumer = "",//documento de identidad
         phone_code = "",
         phone_number = "",
-        ref = ""
+        ref = "",
+        img_ref = ""
     }) {
         this.code_bank = code_bank;
         this.id_constumer = id_constumer;
         this.phone_code = phone_code;
         this.phone_number = phone_number;
         this.ref = ref;
-
+        this.img_ref = img_ref;
         return this;
     }
 }
@@ -116,6 +118,7 @@ export default class Inovice {
          * @type string
          */
         this.ref_pay = "0";//codigo de referencia
+        this.img_ref_pay = "";
 
         this.aprobed_msg = "";//mensaje de aprobacion, si no se aprueba la factura se coloca una razon
 
@@ -127,6 +130,7 @@ export default class Inovice {
         let ino = new Inovice();
         ino._id = inoviceModel._id.toString();
         ino.ref_pay = inoviceModel.ref_pay;
+        ino.img_ref_pay = inoviceModel.img_ref_pay;
         ino.currencypaid = inoviceModel.currencypaid;
         ino.currencyreceived = inoviceModel.currencyreceived;
         ino.create = inoviceModel.create;

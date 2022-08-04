@@ -88,6 +88,7 @@ type Inovice{
     method:String
     pricethen:String
     ref_pay:String
+    img_ref_pay:String
     aprobed_msg:String
     withdraw_details:WithdrawDetails
     

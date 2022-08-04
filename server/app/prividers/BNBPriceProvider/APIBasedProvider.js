@@ -43,12 +43,13 @@ export default class APIBasedProvider {
         
         
 
-        fetch(url+"/bnbprice/server-api-based-provider")
+        fetch(url+"/server-api-based-provider")
             .then(x => x.json())
             .then(data => {
                 //console.log(data)
-                console.log("DEBUG BNBPRICE: " + data.actual_price)
-                if (data.actual_price != 0) this.price = (data.actual_price);
+                console.log("DEBUG PRICES: " ,data)
+                if (data.prices.bnb != 0) this.price = (data.prices.bnb);
+                if (data.prices.usd!= 0) this.usdprice = (data.prices.usd);
             })
             .catch((error) => {
                 console.log("ERROR _getBnbPrice ", error)

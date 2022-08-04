@@ -89,6 +89,19 @@
             "type": "function"
         },
         {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "new_owner",
+                    "type": "address"
+                }
+            ],
+            "name": "set_owner",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
             "inputs": [],
             "name": "withdraw",
             "outputs": [],
